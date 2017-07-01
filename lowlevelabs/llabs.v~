@@ -1,0 +1,3 @@
+`define SCR_HEIGHT 12544
+`define SCR_WIDTH `SCR_HEIGHT
+
