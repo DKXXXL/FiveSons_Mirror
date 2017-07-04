@@ -1,4 +1,4 @@
-`define SCR_HEIGHT 12544
+`define SCR_HEIGHT 112
 `define SCR_WIDTH `SCR_HEIGHT
 
 `define SCR_HEIGHT_BITS 7
