@@ -71,7 +71,7 @@ module painter(
 		CP_PAINT_EN = 2'd1,
 		CP_PAINT_DE = 2'd2,
 		CP_NEXT_VAL = 2'd3,
-		COLOR_BLACK = 3'b000,
+		COLOR_BLACK = 3'b010,
 		COLOR_BLUE  = 3'b001,
 		COLOR_YELLOW= 3'b110,
 		BOARD_PAINTING = 2'd0,
