@@ -35,17 +35,31 @@ module screenFlash(
 	VGA_HS, // VGA_H_SYNC
 	VGA_VS, // VGA_V_SYNC
 	VGA_BLANK_N, // VGA_BLANK
-	BGA_SYNC_N, //VGA SYNC
+	VGA_SYNC_N, //VGA SYNC
 	VGA_R, // VGA Red[9:0]
 	VGA_G, // VGA Green[9:0]
 	VGA_B // VGA Blue[9:0]
 	);
 
-  input Clck;
-  input in_cont_signal;
+  input Clck, in_cont_signal, Reset, next_fin_signal;
+  input [`COLOR_SIZE - 1: 0] read_data;
+  output out_cont_signal;
+  output [`MEMORY_SIZE_BITS - 1 : 0] read_addr;
+
+  	// Declare your inputs and outputs here
+	// Do not change the following outputs
+	output			VGA_CLK;   				//	VGA Clock
+	output			VGA_HS;					//	VGA H_SYNC
+	output			VGA_VS;					//	VGA V_SYNC
+	output			VGA_BLANK_N;				//	VGA BLANK
+	output			VGA_SYNC_N;				//	VGA SYNC
+	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
+	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
+	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
+
 	reg transition_mode;
 	reg [1:0] each_cycle;
-	reg print_enable;
+	wire print_enable;
 	localparam
 		READ_DATA = 2'b00,
 		SETCO = 2'b01,
@@ -79,14 +93,10 @@ module screenFlash(
 	defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 	defparam VGA.BACKGROUNF_IMAGE = "black.mif";
 
-	always@(Clck)
+	initial
 	begin
-		if(Reset == 0)
-		begin
-			out_cont_signal = 0;
-			x_co = 0;
-			y_co = 0;
-		end
+	  out_cont_signal = 0;
+	  read_addr = 0;
 	end
 
   	always@(Clck) 

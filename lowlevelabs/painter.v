@@ -3,6 +3,8 @@
 `define BOARD_WIDTH 16
 `define BOARD_HEIGHT `BOARD_WIDTH
 
+`define BOARD_SIZE (`BOARD_HEIGHT * `BOARD_WIDTH)
+
 `define BOARD_WIDTH_BITS 4
 `define BOARD_HEIGHT_BITS 4
 
@@ -68,6 +70,17 @@ module painter(
 	// output : The output indicating starting to write information to the memory
 	);
 
+	input in_cont_signal, next_out_cont_signal, Clck, Reset;
+	input [`BOARD_SIZE - 1:0] board;
+	input [`WINNING_STATUS_BITS - 1 : 0] winning_information;
+	input [`BOARD_WIDTH_BITS - 1:0] pointer_loc_x;
+	input [`BOARD_HEIGHT_BITS - 1:0] pointer_loc_y;
+	output out_cont_signal, Reset, print_enable;
+	output [`MEMORY_SIZE_BITS - 1 : 0] address;
+
+	output [2:0] color;
+
+
 	localparam
 		CP_LOAD_VAL = 2'd0,
 		CP_PAINT_EN = 2'd1,
@@ -92,11 +105,6 @@ module painter(
 	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
 	reg [`BOARD_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCRENN_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
-	reg [`MEMORY_SIZE_BITS - 1 : 0] address;
-
-	reg [2:0] color;
-	wire print_enable;
-	wire [2:0] mem_output;
 	reg CHESS_CYCLE;
 	reg [1:0] CHESS_PAINTING_STAGE;
 	wire start_paint_chess, end_paint_chess, paint_chess_load;
