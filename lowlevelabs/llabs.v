@@ -1,4 +1,4 @@
-
+`include header.v
 
 module llabs(
 	working,
@@ -18,14 +18,20 @@ module llabs(
 	VGA_HS, // VGA_H_SYNC
 	VGA_VS, // VGA_V_SYNC
 	VGA_BLANK_N, // VGA_BLANK
-	BGA_SYNC_N, //VGA SYNC
+	VGA_SYNC_N, //VGA SYNC
 	VGA_R, // VGA Red[9:0]
 	VGA_G, // VGA Green[9:0]
 	VGA_B // VGA Blue[9:0]
 );
 
 
-  	// Declare your inputs and outputs here
+	input Clck, Reset, working;
+	input [`BOARD_SIZE - 1 : 0] board;
+	input [`WINNING_STATUS_BITS - 1 : 0] gaming_status;
+	input [`BOARD_WIDTH_BITS - 1 : 0] pointer_loc_x;
+	input [`BOARD_HEIGHT_BITS - 1 : 0] pointer_loc_y;
+
+ 	// Declare your inputs and outputs here
 	// Do not change the following outputs
 	output			VGA_CLK;   				//	VGA Clock
 	output			VGA_HS;					//	VGA H_SYNC
@@ -53,6 +59,7 @@ module llabs(
 	wire [`COLOR_SIZE - 1: 0] mem_output;
 
 	assign address_0 = address_1 | address_2;
+
 
 	DummyStart ds(
 	.working(working)

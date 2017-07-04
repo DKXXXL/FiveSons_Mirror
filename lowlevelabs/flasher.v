@@ -1,20 +1,4 @@
-`define SCR_HEIGHT 112
-`define SCR_WIDTH `SCR_HEIGHT
-
-`define SCR_HEIGHT_BITS 7
-`define SCR_WIDTH_BTIS `SCR_HEIGHT_BITS
-
-
-`define MEM_ADDR_START 0
-
-`define COLOR_SIZE 3
-
-
-`define ADDR_SIZE 14
-
-
-`define COOR_TO_OFFSET(x, y) (x + (y * `SCR_WIDTH))
-
+`include header.v
 
 module screenFlash(
 	Clck, 
@@ -57,7 +41,7 @@ module screenFlash(
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
-	reg transition_mode;
+	
 	reg [1:0] each_cycle;
 	wire print_enable;
 	localparam
@@ -97,6 +81,11 @@ module screenFlash(
 	begin
 	  out_cont_signal = 0;
 	  read_addr = 0;
+	  x_co = 0;
+	  y_co = 0;
+	  color_type = 0;
+	  each_cycle = READ_DATA;
+	  print_enable = 0;
 	end
 
   	always@(Clck) 
@@ -110,9 +99,6 @@ module screenFlash(
 		end
 		else
 		begin
-
-
-
 		if(in_cont_signal == 1 && out_cont_signal == 0) 
 		begin
 			case(each_cycle)
@@ -135,6 +121,8 @@ module screenFlash(
 			begin
 				if(x_co == SCR_WIDTH && y_co == SCR_HEIGHT)
 				begin
+					x_co = 0;
+					y_co = 0;
 					out_cont_signal = 1;
 				end
 				else
@@ -149,15 +137,19 @@ module screenFlash(
 				end
 				each_cycle <= READ_DATA;
 			end
+			endcase
 		end
+		else
+		if(next_fin_signal == 1)
+			out_cont_signal = 0;
 	  	end
 	end
 
-	always@(next_out_cont_signal)
-	begin
-		if(next_out_cont_signal == 1)
-			out_cont_signal = 0;
-	end
+	// always@(next_out_cont_signal)
+	// begin
+	// 	if(next_out_cont_signal == 1)
+	// 		out_cont_signal = 0;
+	// end
 
 
 
