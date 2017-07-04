@@ -219,3 +219,21 @@ module painter(
 	
 
 	end
+
+
+module paint_chess(
+	x_co_start,
+	// input : the start point for x coordinate
+	y_co_start,
+	// input : the start point for y coordinate
+	x_co_end,
+	// input : the end point for x  coordinate
+	y_co_end,
+	// input : the end point for y coordinate
+	memaddr,
+	// output : the Video memory address to write
+	print_enable,
+	// output : the enabling for writing
+);
+
+endmodule
