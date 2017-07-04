@@ -34,7 +34,8 @@
 `define MAP_BOARDYCO_PIXELYCOSTART(y) (y * `LATTICE_PIXEL_HEIGHT)
 `define MAP_BOARDXCO_PIXELXCOEND(x) ((x+1) * `LATTICE_PIXEL_WIDTH)
 `define MAP_BOARDYCO_PIXELYCOEND(y) ((y+1) * `LATTICE_PIXEL_HEIGHT)
-`
+`define MAP_POINTERCO_PIXELCO(x) (x * `COLOR_SIZE)
+`define MAP_POINTERCO_PIXELCOEND(x) ((x+1) * `COLOR_SIZE)
 
 `define MAP_PIXELCO_MEMADDR(x, y) (x + y * `SCR_WIDTH)
 
@@ -52,7 +53,8 @@ module painter(
 	// input : the huge number of wires indicating a board
 	winning_information,
 	// input : the information about winning status
-	pointer_loc,
+	pointer_loc_x,
+	pointer_loc_y,
 	// input : the information of pointer location
 	Clck,
 	// input : the clock
@@ -71,6 +73,8 @@ module painter(
 		CP_PAINT_EN = 2'd1,
 		CP_PAINT_DE = 2'd2,
 		CP_NEXT_VAL = 2'd3,
+		POINTERP_LOAD_VAL = 2'd0,
+		POINTERP_PAINT = 2'd1,
 		COLOR_BLACK = 3'b010,
 		COLOR_BLUE  = 3'b001,
 		COLOR_YELLOW= 3'b110,
@@ -83,6 +87,7 @@ module painter(
 		
 
 	reg [1:0] PAINTING_STAGE;
+	reg [1:0] POINTER_PAINTING_STAGE;
 	reg [`BOARD_WIDTH_BITS - 1 : 0] board_x;
 	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
 	reg [`BOARD_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
@@ -109,6 +114,7 @@ module painter(
 		PAINTING_STAGE = BOARD_PAINTING;
 		CHESS_CYCLE = FINDING;
 		color = 0;
+		POINTER_PAINTING_STAGE = POINTERP_LOAD_VAL;
 		CHESS_PAINTING_STAGE = 2'b0;
 		start_paint_chess = 0;
 		paint_chess_load = 0;
@@ -183,7 +189,7 @@ module painter(
 						if(board_x == `BOARD_WIDTH - 1 &&
 							board_y == `BOARD_HEIGHT - 1)
 						begin
-							PAINTING_STAGE = UPPER_PAINTING;
+							PAINTING_STAGE = POINTER_PAINTING;
 							CHESS_CYCLE = FINDING;
 
 						end
@@ -209,12 +215,36 @@ module painter(
 				end
 			end
 
+			if(PAINTING_STAGE == POINTER_PAINTING)
+			begin
+			  if(POINTER_PAINTING_STAGE == POINTERP_LOAD_VAL)
+			  begin
+			  	pixel_x_start = MAP_POINTERCO_PIXELCO(pointer_loc_x);
+				pixel_y_start = MAP_POINTERCO_PIXELCO(pointer_loc_y);
+				pixel_x_end = MAP_POINTERCO_PIXELCOEND(pointer_loc_x);
+				pixel_y_end = MAP_POINTERCO_PIXELCOEND(pointer_loc_y);
+				POINTER_PAINTING_STAGE = POINTER_PAINTING;
+				start_paint_chess = 1;
+			  end
+			  else
+			  begin
+				if(end_paint_chess == 1)
+				begin
+				  start_paint_chess = 0;
+				  POINTER_PAINTING_STAGE = POINTERP_LOAD_VAL;
+				  PAINTING_STAGE = UPPER_PAINTING;
+				end
+			  end
+			end
+
 			if(PAINTING_STAGE == UPPER_PAINTING)
 			begin
 				PAINTING_STAGE = BOARD_PAINTING;
 				out_cont_signal = 1;
 				address = 0;
 			end
+
+			
 
 
 
