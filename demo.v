@@ -17,6 +17,24 @@ module demo(
 		VGA_G,	 						//	VGA Green[9:0]
 		VGA_B   						//	VGA Blue[9:0]
 );
+
+	input			CLOCK_50;				//	50 MHz
+	input   [17:0]   SW;
+	input   [3:0]   KEY;
+
+	// Declare your inputs and outputs here
+	// Do not change the following outputs
+	output			VGA_CLK;   				//	VGA Clock
+	output			VGA_HS;					//	VGA H_SYNC
+	output			VGA_VS;					//	VGA V_SYNC
+	output			VGA_BLANK_N;				//	VGA BLANK
+	output			VGA_SYNC_N;				//	VGA SYNC
+	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
+	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
+	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
+
+    reg [255 : 0] board;
+
 llabs labs(
 	.working(KEY[0]),
 	// input : change indicating startworking, can't be stopped
@@ -41,22 +59,7 @@ llabs labs(
 	.VGA_B(VGA_B) // VGA Blue[9:0]
 );
 
-	input			CLOCK_50;				//	50 MHz
-	input   [17:0]   SW;
-	input   [3:0]   KEY;
 
-	// Declare your inputs and outputs here
-	// Do not change the following outputs
-	output			VGA_CLK;   				//	VGA Clock
-	output			VGA_HS;					//	VGA H_SYNC
-	output			VGA_VS;					//	VGA V_SYNC
-	output			VGA_BLANK_N;				//	VGA BLANK
-	output			VGA_SYNC_N;				//	VGA SYNC
-	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
-	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
-	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
-
-    reg [255 : 0] board;
 
 
     always@(*)
