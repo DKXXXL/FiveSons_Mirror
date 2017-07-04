@@ -31,7 +31,8 @@ module painter(
 	input [`WINNING_STATUS_BITS - 1 : 0] winning_information;
 	input [`BOARD_WIDTH_BITS - 1:0] pointer_loc_x;
 	input [`BOARD_HEIGHT_BITS - 1:0] pointer_loc_y;
-	output reg out_cont_signal, print_enable;
+	output reg out_cont_signal;
+	output print_enable;
 	output [`MEMORY_SIZE_BITS - 1 : 0] address;
 
 	output reg [2:0] color;
@@ -139,10 +140,10 @@ module painter(
 						`CHESS_WITH_NONE : color = COLOR_BLACK;
 						endcase
 
-						pixel_x_start = `MAP_XCO_PIXELXCOSTART(board_x);
-						pixel_y_start = `MAP_YCO_PIXELYCOSTART(board_y);
-						pixel_x_end = `MAP_XCO_PIXELXCOEND(board_x);
-						pixel_y_end = `MAP_YCO_PIXELYCOEND(board_y);
+						pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x);
+						pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y);
+						pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x);
+						pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y);
 						// pixel_x = pixel_x_start;
 						// pixel_y = pixel_y_start;
 						paint_chess_load = ~paint_chess_load;
@@ -206,7 +207,7 @@ module painter(
 			begin
 				PAINTING_STAGE = BOARD_PAINTING;
 				out_cont_signal = 1;
-				address = 0;
+				// address = 0;
 			end
 
 			

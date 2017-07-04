@@ -27,8 +27,8 @@ module screenFlash(
 
   input Clck, in_cont_signal, Reset, next_fin_signal;
   input [`COLOR_SIZE - 1: 0] read_data;
-  output out_cont_signal;
-  output [`MEMORY_SIZE_BITS - 1 : 0] read_addr;
+  output reg out_cont_signal;
+  output reg [`MEMORY_SIZE_BITS - 1 : 0] read_addr;
 
   	// Declare your inputs and outputs here
 	// Do not change the following outputs
@@ -43,39 +43,38 @@ module screenFlash(
 
 	
 	reg [1:0] each_cycle;
-	wire print_enable;
-	localparam
-		READ_DATA = 2'b00,
-		SETCO = 2'b01,
-		START_PR = 2'b10,
-		FINIS_PR = 2'b11;
+	reg print_enable;
+	localparam 	READ_DATA = 2'b00,
+				SET_CO = 2'b01,
+				START_PR = 2'b10,
+				FINIS_PR = 2'b11;
 
 	reg [`SCR_WIDTH_BITS - 1: 0] x_co;
 	reg [`SCR_HEIGHT_BITS - 1 :0] y_co;
-	wire [`COLOR_SIZE - 1 : 0] color_type;
 	
-	assign color_type = read_data;
+	
+	
 
-	vga_adapter VGA(
-		.resetn(Reset),
-		.clock(Clck),
-		.colour(color_type),
-		.x(x_co),
-		.y(y_co),
-		.plot(print_enable),
-		/* Signals for the DC to drive the monitor. */
-		.VGA_R(VGA_R),
-		.VGA_G(VGA_G),
-		.VGA_B(VGA_B),
-		.VGA_HS(VGA_HS),
-		.VGA_VS(VGA_VS),
-		.VGA_BLANK(VGA_BLANK_N),
-		.VGA_SYNC(VGA_SYNC_N),
-		.VGA_CLK(VGA_CLK));
-	defparam VGA.RESOLUTION = "160x120";
-	defparam VGA.MONOCHROME = "FALSE";
-	defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
-	defparam VGA.BACKGROUNF_IMAGE = "black.mif";
+	// vga_adapter VGA(
+	// 	.resetn(Reset),
+	// 	.clock(Clck),
+	// 	.colour(read_data),
+	// 	.x(x_co),
+	// 	.y(y_co),
+	// 	.plot(print_enable),
+	// 	/* Signals for the DC to drive the monitor. */
+	// 	.VGA_R(VGA_R),
+	// 	.VGA_G(VGA_G),
+	// 	.VGA_B(VGA_B),
+	// 	.VGA_HS(VGA_HS),
+	// 	.VGA_VS(VGA_VS),
+	// 	.VGA_BLANK(VGA_BLANK_N),
+	// 	.VGA_SYNC(VGA_SYNC_N),
+	// 	.VGA_CLK(VGA_CLK));
+	// defparam VGA.RESOLUTION = "160x120";
+	// defparam VGA.MONOCHROME = "FALSE";
+	// defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+	// defparam VGA.BACKGROUNF_IMAGE = "black.mif";
 
 	initial
 	begin
@@ -83,7 +82,7 @@ module screenFlash(
 	  read_addr = 0;
 	  x_co = 0;
 	  y_co = 0;
-	  color_type = 0;
+	  // color_type = 0;
 	  each_cycle = READ_DATA;
 	  print_enable = 0;
 	end
@@ -98,28 +97,28 @@ module screenFlash(
 			each_cycle = READ_DATA;
 		end
 		else
-		begin
+		
 		if(in_cont_signal == 1 && out_cont_signal == 0) 
 		begin
 			case(each_cycle)
 			READ_DATA:
 			begin
-				read_addr = COOR_TO_OFFSET(x_co, y_co);
-				each_cycle <= START_PR;
+				read_addr = `COOR_TO_OFFSET(x_co, y_co);
+				each_cycle = START_PR;
 			end
 			START_PR:
 			begin
 				print_enable = 1;
-				each_cycle <= FINIS_PR;
+				each_cycle = FINIS_PR;
 			end
 			FINIS_PR:
 			begin
 				print_enable = 0;
-				each_cycle <= SET_CO;
+				each_cycle = SET_CO;
 			end
 			SET_CO:	
 			begin
-				if(x_co == SCR_WIDTH && y_co == SCR_HEIGHT)
+				if(x_co == `SCR_WIDTH && y_co == `SCR_HEIGHT)
 				begin
 					x_co = 0;
 					y_co = 0;
@@ -127,7 +126,7 @@ module screenFlash(
 				end
 				else
 				begin	
-					if (x_co == SCR_WIDTH)
+					if (x_co == `SCR_WIDTH)
 					begin
 						y_co = y_co + 1;
 						x_co = 0;
@@ -135,14 +134,13 @@ module screenFlash(
 					else
 						x_co = x_co + 1;
 				end
-				each_cycle <= READ_DATA;
+				each_cycle = READ_DATA;
 			end
 			endcase
 		end
 		else
 		if(next_fin_signal == 1)
 			out_cont_signal = 0;
-	  	end
 	end
 
 	// always@(next_out_cont_signal)
