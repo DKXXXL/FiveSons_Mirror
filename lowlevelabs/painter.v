@@ -58,12 +58,12 @@ module painter(
 
 	reg [1:0] PAINTING_STAGE;
 	reg [1:0] POINTER_PAINTING_STAGE;
-	reg [`BOARD_WIDTH_BITS - 1 : 0] board_x;
-	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
+	reg [`SCR_WIDTH_BITS - 1 : 0] board_x;
+	reg [`SCR_HEIGHT_BITS - 1 : 0] board_y;
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
 	reg CHESS_CYCLE;
-	reg [1:0] CHESS_PAINTING_STAGE;
+	
 	reg start_paint_chess,  paint_chess_load;
 	wire end_paint_chess;
 
@@ -81,7 +81,7 @@ module painter(
 		CHESS_CYCLE = FINDING;
 		color = 0;
 		POINTER_PAINTING_STAGE = POINTERP_LOAD_VAL;
-		CHESS_PAINTING_STAGE = 2'b0;
+		out_cont_signal = 0;
 		start_paint_chess = 0;
 		paint_chess_load = 0;
 	end
@@ -162,11 +162,11 @@ module painter(
 						else
 						if(board_x == `BOARD_WIDTH - 1)
 						begin
-							board_y = board_y + 1;
+							board_y = board_y + 1'd1;
 							board_x = 0;
 						end
 						else
-							board_x = board_x + 1;
+							board_x = board_x + 1'd1;
 					
 
 				end	

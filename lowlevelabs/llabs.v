@@ -21,7 +21,9 @@ module llabs(
 	VGA_SYNC_N, //VGA SYNC
 	VGA_R, // VGA Red[9:0]
 	VGA_G, // VGA Green[9:0]
-	VGA_B // VGA Blue[9:0]
+	VGA_B, // VGA Blue[9:0]
+	debug_output
+	
 );
 
 
@@ -30,6 +32,9 @@ module llabs(
 	input [`WINNING_STATUS_BITS - 1 : 0] gaming_status;
 	input [`BOARD_WIDTH_BITS - 1 : 0] pointer_loc_x;
 	input [`BOARD_HEIGHT_BITS - 1 : 0] pointer_loc_y;
+
+
+	// assign debug_output[2:0] = {DummyStart_painter, painter_flasher, flasher_DummyStart};
 
  	// Declare your inputs and outputs here
 	// Do not change the following outputs
@@ -41,42 +46,49 @@ module llabs(
 	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
-	//ram1122x3 videoMem(
-	//	.address(address_0),
-	//	.clock(Clck),
-	//	.data(color),
-	//	.wren(print_enable),
-	//	.q(mem_output)
-	//	);
+	output reg [50:0] debug_output;
+	//assign debug_output[2:0] = {DummyStart_painter, painter_flasher, flasher_DummyStart};
+	// assign debug_output[0] = {DummyStart_painter, painter_flasher, flasher_DummyStart};
 	
-	wire DummyStart_painter, painter_flasher, flasher_DummyStart;
+	ram1122x3 videoMem(
+	.address(address_0),
+	.clock(Clck),
+	.data(color),
+	.wren(print_enable),
+	.q(mem_output)
+	);
+	
+	
+	
+	reg startPT,  startFlash ;
+	wire endPT,endFlash;
+	reg pt_complete, flash_complete;
 
 	wire [`MEMORY_SIZE_BITS - 1:0] address_0, address_1, address_2;
-        wire [`COLOR_SIZE - 1 : 0] color;
+   wire [`COLOR_SIZE - 1 : 0] color;
 	wire print_enable;
 	wire [`COLOR_SIZE - 1: 0] mem_output;
 
 	assign address_0 = address_1 | address_2;
 
 
-	DummyStart ds(
-	.working(working),
-    	.in_cont_signal(flasher_DummyStart),
-	// input : The signal to start 
-	.out_cont_signal(DummyStart_painter),
-	// output: The signal for next continuation to start
-	.next_out_cont_signal(painter_flasher),
-	// input : indicating the next continuation is finished, going to the next after the next
-    	.Clck(Clck)
-);
-
+//	DummyStart ds(
+//	.working(working),
+//    	.in_cont_signal(flasher_DummyStart),
+//	// input : The signal to start 
+//	.out_cont_signal(DummyStart_painter),
+//	// output: The signal for next continuation to start
+//	.next_out_cont_signal(painter_flasher),
+//	// input : indicating the next continuation is finished, going to the next after the next
+//    	.Clck(Clck)
+//);
 
 	painter pt(
-	.in_cont_signal(DummyStart_painter_0),
+	.in_cont_signal(startPT),
 	// input : The signal to start 
-	.out_cont_signal(painter_flasher),
+	.out_cont_signal(endPT),
 	// output: The signal for next continuation to start
-	.next_out_cont_signal(flasher_DummyStart),
+	.next_out_cont_signal(pt_complete),
 	// input : indicating the next continuation is finished, going to the next after the next
 	.board(board),
 	// input : the huge number of wires indicating a board
@@ -100,11 +112,11 @@ module llabs(
 screenFlash sf(
 	.Clck(Clck), 
 	// input: The CLOCK
-	.in_cont_signal(painter_flasher), 
+	.in_cont_signal(startFlash), 
 	// input: The signal to start flashing, continuation
-	.read_addr(address_2), 
+	.read_addr(endFlash), 
 	// output : the address to read from
-	.read_data(mem_output),
+	.read_data(flash_complete),
 		     // input : the data got from the address
 	.Reset(Reset),
 		     //input : Reset signal
@@ -121,6 +133,48 @@ screenFlash sf(
 	.VGA_G(VGA_G), // VGA Green[9:0]
 	.VGA_B(VGA_B) // VGA Blue[9:0]
 	);
+	
+	reg llabs_stage;
+	localparam LLABS_PAINTING = 1'b0,
+					LLABS_FLASHING = 1'b1;
+					
+	initial
+	begin
+		llabs_stage = LLABS_PAINTING;
+	end
+	
+	always@(Clck)
+	begin
+		case(llabs_stage)
+		LLABS_PAINTING:
+		begin
+			debug_output[0] = 0;
+			debug_output[1] = 1;
+			flash_complete = 0;
+			startPT = 1;
+			if(endPT == 1)
+			begin
+				llabs_stage = LLABS_FLASHING;
+				startPT = 0;
+				pt_complete = 1;
+			end
+		end
+		LLABS_FLASHING:
+		begin
+			debug_output[0] = 1;
+			debug_output[1] = 0;
+			pt_complete = 0;
+			startFlash = 1;
+			if(endFlash == 1)
+			begin
+				llabs_stage = LLABS_PAINTING;
+				startFlash = 0;
+				flash_complete = 1;
+			end			
+		end
+		endcase
+	
+	end
 
 
 endmodule
@@ -134,9 +188,13 @@ module DummyStart(
 	// output: The signal for next continuation to start
 	next_out_cont_signal,
 	// input : indicating the next continuation is finished, going to the next after the next
-    	Clck,
+    	Clck
 );
 
+	initial
+	begin
+		out_cont_signal = 1;
+	end
     input working, in_cont_signal, next_out_cont_signal, Clck;
     output reg out_cont_signal;
     always@(posedge Clck)
@@ -145,7 +203,7 @@ module DummyStart(
       if(next_out_cont_signal == 1)
             out_cont_signal = 0;
 		else
-		if(in_cont_signal == 1 || working == 1)
+		if(in_cont_signal == 1 && working == 1)
         out_cont_signal = 1;
     
     end

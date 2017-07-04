@@ -1,23 +1,23 @@
-`define MEMORY_SIZE_BITS 14
+`define MEMORY_SIZE_BITS 4'd14
 
-`define BOARD_WIDTH 16
+`define BOARD_WIDTH 5'd16
 `define BOARD_HEIGHT `BOARD_WIDTH
 
 `define BOARD_SIZE (`BOARD_HEIGHT * `BOARD_WIDTH)
 
-`define BOARD_WIDTH_BITS 4
-`define BOARD_HEIGHT_BITS 4
+`define BOARD_WIDTH_BITS 3'd4
+`define BOARD_HEIGHT_BITS 3'd4
 
-`define CHESS_STATUS_BITS 2
+`define CHESS_STATUS_BITS 2'd2
 `define CHESS_WITH_NONE 	2'd0
 `define CHESS_WITH_BLACK 	2'd1
 `define CHESS_WITH_BLUE 	2'd2
 `define CHESS_WITH_WIN 		2'd3
 
 
-`define POINTER_BITS 8
+`define POINTER_BITS 4'd8
 
-`define WINNING_STATUS_BITS 2
+`define WINNING_STATUS_BITS 2'd2
 `define WINNING_BLACK 	2'b10
 `define WINNING_BLUE 	2'b11
 `define WINNING_EQUAL 	2'b01
@@ -44,19 +44,19 @@
 
 `define COOR_MAPPING_TO_PIXEL(x, y)  
 
-`define SCR_HEIGHT 112
+`define SCR_HEIGHT 7'd112
 `define SCR_WIDTH `SCR_HEIGHT
 
-`define SCR_HEIGHT_BITS 7
+`define SCR_HEIGHT_BITS 4'd7
 `define SCR_WIDTH_BITS `SCR_HEIGHT_BITS
 
 
 `define MEM_ADDR_START 0
 
-`define COLOR_SIZE 3
+`define COLOR_SIZE 2'd3
 
 
-`define ADDR_SIZE 14
+`define ADDR_SIZE 4'd14
 
 
 `define COOR_TO_OFFSET(x, y) (x + (y * `SCR_WIDTH))
