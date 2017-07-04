@@ -41,20 +41,18 @@ module llabs(
 	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
-	ram1122x3 videoMem(
-		.address(address_0),
-		.clock(Clck),
-		.data(color),
-		.wren(print_enable),
-		.q(mem_output)
-		);
+	//ram1122x3 videoMem(
+	//	.address(address_0),
+	//	.clock(Clck),
+	//	.data(color),
+	//	.wren(print_enable),
+	//	.q(mem_output)
+	//	);
 	
-	wire DummyStart_painter, 
-	painter_flasher, 
-	flasher_DummyStart;
+	wire DummyStart_painter, painter_flasher, flasher_DummyStart;
 
 	wire [`MEMORY_SIZE_BITS - 1:0] address_0, address_1, address_2;
-    wire [`COLOR_SIZE - 1 : 0] color;
+        wire [`COLOR_SIZE - 1 : 0] color;
 	wire print_enable;
 	wire [`COLOR_SIZE - 1: 0] mem_output;
 
@@ -62,14 +60,14 @@ module llabs(
 
 
 	DummyStart ds(
-	.working(working)
-    .in_cont_signal(flasher_DummyStart),
+	.working(working),
+    	.in_cont_signal(flasher_DummyStart),
 	// input : The signal to start 
 	.out_cont_signal(DummyStart_painter),
 	// output: The signal for next continuation to start
 	.next_out_cont_signal(painter_flasher),
 	// input : indicating the next continuation is finished, going to the next after the next
-    Clck,
+    	.Clck(Clck)
 );
 
 
@@ -122,7 +120,7 @@ screenFlash sf(
 	.VGA_R(VGA_R), // VGA Red[9:0]
 	.VGA_G(VGA_G), // VGA Green[9:0]
 	.VGA_B(VGA_B) // VGA Blue[9:0]
-	)
+	);
 
 
 endmodule
@@ -130,15 +128,17 @@ endmodule
 module DummyStart(
 	working,
 	// input : indicating working
-    in_cont_signal,
+    	in_cont_signal,
 	// input : The signal to start 
 	out_cont_signal,
 	// output: The signal for next continuation to start
 	next_out_cont_signal,
 	// input : indicating the next continuation is finished, going to the next after the next
-    Clck,
+    	Clck,
 );
 
+    input working, in_cont_signal, next_out_cont_signal, Clck;
+    output reg out_cont_signal;
     always@(posedge Clck)
     begin
       if(in_cont_signal == 1)
