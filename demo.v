@@ -2,7 +2,7 @@
 
 `define COOR_TO_OFFSET(x, y) (x * 2 + y * 16 * 2)
 
-module demo(
+module FiveSons(
 		CLOCK_50,						//	On Board 50 MHz
 		// Your inputs and outputs here
         KEY,

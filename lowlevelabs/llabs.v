@@ -1,4 +1,4 @@
-`include header.v
+`include "header.v"
 
 module llabs(
 	working,
@@ -141,18 +141,13 @@ module DummyStart(
     output reg out_cont_signal;
     always@(posedge Clck)
     begin
-      if(in_cont_signal == 1)
-        out_cont_signal = 1;
-      else
-        if(next_out_cont_signal == 1)
+
+      if(next_out_cont_signal == 1)
             out_cont_signal = 0;
+		else
+		if(in_cont_signal == 1 || working == 1)
+        out_cont_signal = 1;
     
     end
-
-	always@(working)
-	begin
-	  if(working == 1)
-	  	out_cont_signal = 1;
-	end
 
 endmodule

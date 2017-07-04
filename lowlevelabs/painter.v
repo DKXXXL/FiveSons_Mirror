@@ -1,4 +1,4 @@
-`include header.v
+`include "header.v"
 
 module painter(
 	in_cont_signal,
@@ -146,7 +146,7 @@ module painter(
 						pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y);
 						// pixel_x = pixel_x_start;
 						// pixel_y = pixel_y_start;
-						paint_chess_load = ~paint_chess_load;
+						paint_chess_load = 1;
 						start_paint_chess = 1;
 							
 					end
@@ -172,12 +172,13 @@ module painter(
 				end	
 				else // (CHESS_CYCLE == PAINTING)
 				begin 
+					
 					if(end_paint_chess == 1)
 					begin
 					  start_paint_chess = 0;
 					  CHESS_CYCLE = FINDING;
 					end
-
+					paint_chess_load = 0;
 				end
 			end
 
@@ -291,12 +292,17 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 	end
 	always@(pixel_load_signal)
 	begin
-	  pixel_x <= pixel_x_start;
-	  pixel_y <= pixel_y_start;
+
 	end
 
 	always@(posedge Clck)
 	begin
+		if(pixel_load_signal == 1)
+		begin
+			pixel_x = pixel_x_start;
+			pixel_y = pixel_y_start;
+		end
+	
 	  if(in_cont_signal == 1 &&
 	  out_cont_signal == 0)
 	  begin
