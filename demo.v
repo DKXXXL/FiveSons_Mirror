@@ -23,8 +23,9 @@ module FiveSons(
 	input   [17:0]   SW;
 	input   [3:0]   KEY;
 	output [17:0] LEDR;
-	assign LEDR[17:0] = debug[17:0];
 	wire [50:0] debug;
+	assign LEDR[17:0] = debug[17:0];
+	
 	// Declare your inputs and outputs here
 	// Do not change the following outputs
 	output			VGA_CLK;   				//	VGA Clock

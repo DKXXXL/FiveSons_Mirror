@@ -77,7 +77,7 @@ module painter(
 		pixel_y_start = 0;
 		pixel_x_end = 0;
 		pixel_y_end = 0;
-		PAINTING_STAGE = BOARD_PAINTING;
+		PAINTING_STAGE = CHESS_PAINTING;
 		CHESS_CYCLE = FINDING;
 		color = 0;
 		POINTER_PAINTING_STAGE = POINTERP_LOAD_VAL;
@@ -156,6 +156,7 @@ module painter(
 							board_y == `BOARD_HEIGHT - 1)
 						begin
 							PAINTING_STAGE = POINTER_PAINTING;
+							//out_cont_signal = 1;
 							CHESS_CYCLE = FINDING;
 
 						end
@@ -210,9 +211,6 @@ module painter(
 				out_cont_signal = 1;
 				// address = 0;
 			end
-
-			
-
 
 
 		end
@@ -335,11 +333,11 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 						else
 						if(pixel_x == pixel_x_end - 1)
 						begin
-							pixel_y = pixel_y + 1;
+							pixel_y = pixel_y + 1'd1;
 							pixel_x = pixel_x_start;
 						end
 						else
-							pixel_x = pixel_x + 1;
+							pixel_x = pixel_x + 1'd1;
 						CHESS_PAINTING_STAGE = CP_LOAD_VAL;
 					end
 					endcase

@@ -129,11 +129,11 @@ module screenFlash(
 				begin	
 					if (x_co == `SCR_WIDTH)
 					begin
-						y_co = y_co + 1;
+						y_co = y_co + 1'd1;
 						x_co = 0;
 					end
 					else
-						x_co = x_co + 1;
+						x_co = x_co + 1'd1;
 				end
 				each_cycle = READ_DATA;
 			end
