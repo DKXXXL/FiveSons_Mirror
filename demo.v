@@ -1,6 +1,6 @@
 
 
-`define COOR_TO_OFFSET(x, y) (x * 2 + y * 16 * 2)
+`define CO_TO_OFFSET(x, y) (x * 2 + y * 16 * 2)
 
 module FiveSons(
 		CLOCK_50,						//	On Board 50 MHz
@@ -66,7 +66,7 @@ llabs labs(
     begin
       if(KEY[1] == 1)
       begin
-        board[`COOR_TO_OFFSET(SW[3:0], SW[7:4]) +: 1] = 2'b01; 
+        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 1] = 2'b01; 
       end
     end
 
