@@ -77,7 +77,7 @@ llabs labs(
     begin
       if(SW[16] == 1)
       begin
-        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01; 
+        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01;
       end
     end
 
