@@ -21,6 +21,16 @@ module painter(
 	// output : The output indicating starting to write information to the memory
 	);
 	
+	input [`BOARD_SIZE_BITS - 1 : 0] board;
+	input [`WINNING_STATUS_BITS - 1 : 0] winning_information;
+	input [`BOARD_WIDTH_BITS - 1 : 0] pointer_loc_x;
+	input [`BOARD_HEIGHT_BITS - 1 : 0] pointer_loc_y;
+	input Clck, Reset;
+	output print_enable;
+	output reg [`COLOR_SIZE - 1 : 0] color;
+	output [`SCR_WIDTH_BITS - 1 : 0] paint_x_co;
+	output [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co;
+
 
 	reg [2:0] PAINTING_STAGE;
 	reg [`BOARD_WIDTH_BITS - 1 : 0] board_x;
@@ -63,9 +73,44 @@ module painter(
 	  paint_chess_start_working = 0;
 	end
 
+	paint_chess pc(
+	.pixel_x_start(pixel_x_start),
+	// input : the start point for x coordinate
+	.pixel_y_start(pixel_y_start),
+	// input : the start point for y coordinate
+	.pixel_x_end(pixel_x_end),
+	// input : the end point for x  coordinate
+	.pixel_y_end(pixel_y_end),
+	// input : the end point for y coordinate
+	.paint_x_co(paint_x_co),
+	.paint_y_co(paint_y_co),
+	// output : the video coordinates to write with
+	.print_enable(print_enable),
+	// output : the enabling for writing
+	.Clck(Clck),
+	// input : Clock,
+	.working(paint_chess_start_working)
+	// input : indicating start working, continue for one clock cycle is ok
+	);
+
 
 	always@(posedge Clck)
 	begin
+		if(Reset == 0)
+		begin
+			PAINTING_STAGE = PAINTING_BOARD;
+	  		board_x = 0;
+	  		board_y = 0;
+	  		counter = 0;
+	  		chesses_painted = 0;
+	  		pixel_x_start = 0;
+	  		pixel_x_end = 0;
+	  		pixel_y_start = 0;
+	  		pixel_y_end = 0;
+	  		what_is_painted = NOTHING_PAINTED;
+	  		paint_chess_start_working = 0;
+		end
+		else
 		case(PAINTING_STAGE)
 		PAINTING_BOARD : PAINTING_STAGE = PAINTING_CHESS_LOAD1;
 		PAINTING_CHESS_LOAD1 :
@@ -172,8 +217,9 @@ module paint_chess(
 
 input [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 input [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
-input Clck, in_cont_signal, pixel_load_signal;
-
+input Clck, working;
+output reg [`SCR_WIDTH_BITS - 1 : 0] paint_x_co;
+output reg [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co;
 output reg print_enable;
 
 
@@ -216,6 +262,18 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 
 	always@(posedge Clck)
 	begin
+		if(Reset == 0)
+		begin
+			paint_x_co = 0;
+	 		paint_y_co = 0;
+	  		print_enable = 0;
+	  		CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;
+	  		pixel_x_reco_start = 0;
+	  		pixel_x_reco_end = 0;
+	  		pixel_y_reco_start = 0;
+	  		pixel_y_reco_end = 0;
+		end
+		else
 		// Draw first, then change coordinates of pixel
 					case(CHESS_PAINTING_STAGE)
 					CP_WAITING_FOR_START:
