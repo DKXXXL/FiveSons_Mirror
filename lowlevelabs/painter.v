@@ -1,4 +1,7 @@
 `include "header.v"
+`define PAINTING_CONFIG_SQUARE 3'b000
+`define PAINTING_CONFIG_CIRCLE 3'b001
+
 
 module painter(
 	board,
@@ -27,12 +30,14 @@ module painter(
 	input [`BOARD_HEIGHT_BITS - 1 : 0] pointer_loc_y;
 	input Clck, Reset;
 	output print_enable;
-	output reg [`COLOR_SIZE - 1 : 0] color;
+	reg [`COLOR_SIZE - 1 : 0] color_input;
+	output [`COLOR_SIZE - 1 : 0] color;
 	output [`SCR_WIDTH_BITS - 1 : 0] paint_x_co;
 	output [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co;
 
 
 	reg [2:0] PAINTING_STAGE;
+	reg [2:0] PAINTING_CONFIG;
 	reg [`BOARD_WIDTH_BITS - 1 : 0] board_x;
 	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
 
@@ -71,6 +76,7 @@ module painter(
 	  pixel_y_end = 0;
 	  what_is_painted = NOTHING_PAINTED;
 	  paint_chess_start_working = 0;
+	  color = 0;
 	end
 
 	paint_chess pc(
@@ -89,8 +95,14 @@ module painter(
 	// output : the enabling for writing
 	.Clck(Clck),
 	// input : Clock,
-	.working(paint_chess_start_working)
+	.working(paint_chess_start_working),
 	// input : indicating start working, continue for one clock cycle is ok
+	.configure(PAINTING_CONFIG),
+	// input : the configurance
+	.color(color_input),
+	// input : the input preference color 
+	.color_output(color)
+	// output : the real output color
 	);
 
 
@@ -109,6 +121,7 @@ module painter(
 	  		pixel_y_end = 0;
 	  		what_is_painted = NOTHING_PAINTED;
 	  		paint_chess_start_working = 0;
+			PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
 		end
 		else
 		case(PAINTING_STAGE)
@@ -122,7 +135,7 @@ module painter(
 					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y);
 					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y);
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
-					color = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
+					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
 					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
 					paint_chess_start_working = 1;
 				end
@@ -211,15 +224,24 @@ module paint_chess(
 	// output : the enabling for writing
 	Clck,
 	// input : Clock,
-	working
+	working,
 	// input : indicating start working, continue for one clock cycle is ok
+	configure,
+	// input : the configurance
+	color,
+	// input : the input preference color 
+	color_output
+	// output : the real output color
 );
 
 input [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 input [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
 input Clck, working;
+input [`COLOR_SIZE - 1 : 0] color;
+input [2:0] configure;
 output reg [`SCR_WIDTH_BITS - 1 : 0] paint_x_co;
 output reg [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co;
+output reg [`COLOR_SIZE - 1 : 0] color_output;
 output reg print_enable;
 
 
@@ -272,6 +294,7 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 	  		pixel_x_reco_end = 0;
 	  		pixel_y_reco_start = 0;
 	  		pixel_y_reco_end = 0;
+			color_output = 0;
 		end
 		else
 		// Draw first, then change coordinates of pixel
@@ -282,6 +305,7 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 						  pixel_x = pixel_x_start;
 						  pixel_y = pixel_y_start;
 						  CHESS_PAINTING_STAGE = CP_LOAD_VAL;
+						  color_output = color;
 						end
 						else
 						  CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;
