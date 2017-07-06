@@ -66,6 +66,7 @@ module painter(
 	initial
 	begin
 	  PAINTING_STAGE = PAINTING_BOARD;
+	  PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
 	  board_x = 0;
 	  board_y = 0;
 	  counter = 0;
@@ -111,21 +112,22 @@ module painter(
 		if(Reset == 0)
 		begin
 			PAINTING_STAGE = PAINTING_BOARD;
-	  		board_x = 0;
-	  		board_y = 0;
-	  		counter = 0;
-	  		chesses_painted = 0;
-	  		pixel_x_start = 0;
-	  		pixel_x_end = 0;
-	  		pixel_y_start = 0;
-	  		pixel_y_end = 0;
-	  		what_is_painted = NOTHING_PAINTED;
-	  		paint_chess_start_working = 0;
 			PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
+			board_x = 0;
+			board_y = 0;
+			counter = 0;
+			chesses_painted = 0;
+			pixel_x_start = 0;
+			pixel_x_end = 0;
+			pixel_y_start = 0;
+			pixel_y_end = 0;
+			what_is_painted = NOTHING_PAINTED;
+			paint_chess_start_working = 0;
+			color = 0;
 		end
 		else
 		case(PAINTING_STAGE)
-		PAINTING_BOARD : PAINTING_STAGE = PAINTING_CHESS_LOAD1;
+		PAINTING_BOARD : PAINTING_STAGE = PAINTING_POINT;
 		PAINTING_CHESS_LOAD1 :
 			begin
 				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != `CHESS_WITH_NONE)
@@ -137,6 +139,7 @@ module painter(
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
 					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
 					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
+					PAINTING_CONFIG = `PAINTING_CONFIG_CIRCLE;
 					paint_chess_start_working = 1;
 				end
 				else
@@ -178,9 +181,9 @@ module painter(
 			CHESSES_NOT_PAINTED_YET :
 				PAINTING_STAGE = PAINTING_CHESS_LOAD1;
 			CHESSES_PAINTED :
-				PAINTING_STAGE = PAINTING_POINT;
-			POINTER_PAINTED :
 				PAINTING_STAGE = PAINTING_UPPER;
+			POINTER_PAINTED :
+				PAINTING_STAGE = PAINTING_CHESS_LOAD1;
 			default :
 				PAINTING_STAGE = PAINTING_BOARD;
 		  end
@@ -196,6 +199,7 @@ module painter(
 			PAINTING_STAGE = PAINTING_CHESS_LOAD2;
 			color = 3'b100;
 			counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
+			PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
 			paint_chess_start_working = 1;
 			what_is_painted = POINTER_PAINTED;
 		end
@@ -263,8 +267,8 @@ output reg print_enable;
 		// PAINTING = 1'd1;
 	
 reg [2:0] CHESS_PAINTING_STAGE;
-reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end;
-reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
+reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
+reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y;
 
 	initial
 	begin
@@ -295,6 +299,7 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 	  		pixel_y_reco_start = 0;
 	  		pixel_y_reco_end = 0;
 			color_output = 0;
+			chess_radius = 0;
 		end
 		else
 		// Draw first, then change coordinates of pixel
@@ -302,7 +307,21 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 					CP_WAITING_FOR_START:
 						if(working == 1)
 						begin
-						  pixel_x = pixel_x_start;
+						  half_x = (pixel_x_start + pixel_x_end) / 2;
+						  chess_radius = (pixel_y_end - pixel_y_start) / 2;
+						  case(configure)
+						  `PAINTING_CONFIG_CIRCLE:
+						  begin
+						  	pixel_x_reco_start = half_x - 1;
+						  	pixel_x_reco_end = half_x + 1;
+						  end
+						  `PAINTING_CONFIG_SQUARE:
+						  begin
+						  	pixel_x_reco_start = pixel_x_start;
+							pixel_x_reco_end = pixel_x_end;
+						  end
+						  endcase
+						  pixel_x = pixel_x_reco_start;
 						  pixel_y = pixel_y_start;
 						  CHESS_PAINTING_STAGE = CP_LOAD_VAL;
 						  color_output = color;
@@ -332,16 +351,30 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 					end
 					CP_NEXT_VAL :
 					begin
-						if(pixel_x == pixel_x_end - 1 &&
+						if(pixel_x == pixel_x_reco_end - 1 &&
 							pixel_y == pixel_y_end - 1)
 						begin
 							CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;	
 						end
 						else
-						if(pixel_x == pixel_x_end - 1)
+						if(pixel_x == pixel_x_reco_end - 1)
 						begin
 							pixel_y = pixel_y + 1;
-							pixel_x = pixel_x_start;
+							new_x = pixel_y - pixel_y_start;
+							new_x = (new_x > chess_radius ? (new_x - chess_radius) : (chess_radius - new_x));
+							new_x = (chess_radius * chess_radius - new_x * new_x) / 3;
+							case(configure)
+							`PAINTING_CONFIG_CIRCLE:
+							begin
+								pixel_x_reco_start = half_x - new_x;
+								pixel_x_reco_end = half_x - new_x;
+							end
+							`PAINTING_CONFIG_SQUARE:
+							begin
+								pixel_x_reco_start = pixel_x_start;
+								pixel_x_reco_end = pixel_x_end;
+							end
+							pixel_x = pixel_x_reco_start;
 							CHESS_PAINTING_STAGE = CP_LOAD_VAL;
 						end
 						else
