@@ -69,7 +69,7 @@ module llabs(
 	vga_adapter VGA(
 		.resetn(Reset),
 		.clock(Clck),
-		.colour(read_data),
+		.colour(color_output),
 		.x(x_co),
 		.y(y_co),
 		.plot(print_enable),
@@ -85,7 +85,7 @@ module llabs(
 	defparam VGA.RESOLUTION = "160x120";
 	defparam VGA.MONOCHROME = "FALSE";
 	defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
-	defparam VGA.BACKGROUNF_IMAGE = "black.mif";
+	defparam VGA.BACKGROUND_IMAGE = "black.mif";
 
 
 
