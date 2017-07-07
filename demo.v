@@ -1,5 +1,4 @@
 
-
 `define CO_TO_OFFSET(x, y) (x * 2 + y * 16 * 2)
 
 module FiveSons(
@@ -34,10 +33,11 @@ module FiveSons(
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
     reg [255 : 0] board;
+	 reg [1:0] gaming_status;
+	reg [15 : 0] pointer_loc_x;
+	reg [15: 0] pointer_loc_y;
 
 llabs labs(
-	.working(KEY[0]),
-	// input : change indicating startworking, can't be stopped
 	.Clck(CLOCK_50),
 	// input : the clock,
 	.board(board),
@@ -47,7 +47,7 @@ llabs labs(
 	.pointer_loc_x(pointer_loc_x),
 	.pointer_loc_y(pointer_loc_y),
 	// inputs : the location of pointer, x, y coordinate
-	.Reset(Reset),
+	.Reset(SW[17]),
 	// inputs : the reset
 	.VGA_CLK(VGA_CLK), // VGA_CLK;
 	.VGA_HS(VGA_HS), // VGA_H_SYNC
@@ -57,6 +57,7 @@ llabs labs(
 	.VGA_R(VGA_R), // VGA Red[9:0]
 	.VGA_G(VGA_G), // VGA Green[9:0]
 	.VGA_B(VGA_B) // VGA Blue[9:0]
+	
 );
 
 
@@ -64,9 +65,9 @@ llabs labs(
 
     always@(*)
     begin
-      if(KEY[1] == 1)
+      if(KEY[1] == 1'b1)
       begin
-        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 1] = 2'b01; 
+        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01; 
       end
     end
 
