@@ -33,10 +33,10 @@ module FiveSons(
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
-    reg [255 : 0] board;
+    reg [511 : 0] board;
 	 reg [1:0] gaming_status;
-	reg [15 : 0] pointer_loc_x;
-	reg [15: 0] pointer_loc_y;
+	reg [3 : 0] pointer_loc_x;
+	reg [3 : 0] pointer_loc_y;
 
 llabs labs(
 	.Clck(CLOCK_50),
