@@ -38,6 +38,13 @@ module FiveSons(
 	reg [3 : 0] pointer_loc_x;
 	reg [3 : 0] pointer_loc_y;
 
+	parameter PERIOD_clock = 10;
+	reg clock = 0;
+	reg reset = 1;
+	always #PERIOD_clock clock <= !clock;
+
+
+
 llabs labs(
 	.Clck(CLOCK_50),
 	// input : the clock,
