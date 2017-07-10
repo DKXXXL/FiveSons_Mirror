@@ -38,14 +38,14 @@ module painter(
 
 	reg [2:0] PAINTING_STAGE;
 	reg [2:0] PAINTING_CONFIG;
-	reg [`BOARD_WIDTH_BITS - 1 : 0] board_x;
-	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
+	reg [`BOARD_WIDTH_BITS : 0] board_x;
+	reg [`BOARD_HEIGHT_BITS : 0] board_y;
 
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
 
 	reg paint_chess_start_working;
-	reg [3:0] what_is_painted;
+	reg [2:0] what_is_painted;
 	reg [31:0] counter;
 
 
@@ -141,18 +141,17 @@ module painter(
 					PAINTING_CONFIG = `PAINTING_CONFIG_CIRCLE;
 					paint_chess_start_working = 1;
 				end
-				else
-					PAINTING_STAGE = PAINTING_CHESS_LOAD1;
-				
+
 				// Change board_x, board_y, move to next location
-				if(board_x == `BOARD_WIDTH - 1 && board_y == `BOARD_HEIGHT - 1)
+				if(board_y >= `BOARD_HEIGHT)
 				begin
 				  board_x = 0;
 				  board_y = 0;
 				  what_is_painted = CHESSES_PAINTED;
+				  PAINTING_STAGE = PAINTING_UPPER;
 				end
 				else
-					if(board_x == `BOARD_WIDTH - 1)
+					if(board_x >= `BOARD_WIDTH - 1)
 					begin
 				  		board_x = 0;
 				  		board_y = board_y + 1'b1;
