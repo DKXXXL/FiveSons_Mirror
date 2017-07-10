@@ -241,8 +241,8 @@ module paint_chess(
 	// input : the reset
 );
 
-input [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
-input [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
+input [`SCR_WIDTH_BITS - 1: 0] pixel_x_start, pixel_x_end;
+input [`SCR_HEIGHT_BITS- 1: 0] pixel_y_start, pixel_y_end;
 input Clck, working, Reset;
 input [`COLOR_SIZE - 1 : 0] color;
 input [2:0] configure;
@@ -271,8 +271,8 @@ output reg print_enable;
 		// PAINTING = 1'd1;
 	
 reg [2:0] CHESS_PAINTING_STAGE;
-reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
-reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y;
+reg [`SCR_WIDTH_BITS : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
+reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 
 	initial
 	begin
@@ -303,7 +303,7 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y;
 					CP_WAITING_FOR_START:
 						if(working == 1)
 						begin
-						  half_x = (pixel_x_start + pixel_x_end) / (2'd2);
+						  half_x =  ({2'b0, pixel_x_start} + {2'b0, pixel_x_end}) / (2'd2);
 						  chess_radius = (pixel_y_end - pixel_y_start) / (2'd2);
 						  case(configure)
 						  `PAINTING_CONFIG_CIRCLE:
@@ -358,12 +358,12 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y;
 							pixel_y = pixel_y + 1'b1;
 							new_x = pixel_y - pixel_y_start;
 							new_x = (new_x > chess_radius ? (new_x - chess_radius) : (chess_radius - new_x));
-							new_x = (chess_radius * chess_radius * chess_radius - new_x * new_x) / (chess_radius * chess_radius);
+							new_x = (chess_radius * chess_radius * chess_radius - new_x * new_x * new_x) / (chess_radius * chess_radius);
 							case(configure)
 							`PAINTING_CONFIG_CIRCLE:
 							begin
 								pixel_x_reco_start = half_x - new_x;
-								pixel_x_reco_end = half_x - new_x;
+								pixel_x_reco_end = half_x + new_x;
 							end
 							`PAINTING_CONFIG_SQUARE:
 							begin
