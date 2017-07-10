@@ -231,7 +231,27 @@ module painter(
 		end
 		else
 		case(PAINTING_STAGE)
-		PAINTING_BOARD : PAINTING_STAGE = PAINTING_POINT;
+		PAINTING_BOARD : 
+		begin
+			paint_board_start_working = 1;
+			PAINTING_STAGE = PAINTING_BOARD_LOAD1;  
+		end
+		PAINTING_BOARD_LOAD1 :
+			PAINTING_STAGE = PAINTING_BOARD_LOAD2;
+		PAINTING_BOARD_LOAD2 :
+		begin
+			PAINTING_STAGE = PAINTING_BOARD_WAIT;
+			counter = `SCR_HEIGHT * `SCR_WIDTH * `ENSURE;
+		end
+		PAINTING_BOARD_WAIT :
+		begin
+		  paint_board_start_working = 0;
+		  if(counter == 0)
+		  	PAINTING_STAGE = PAINTING_POINT;
+		  else
+		  	counter = counter - 1;
+
+		end
 		PAINTING_CHESS_LOAD1 :
 			begin
 				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != `CHESS_WITH_NONE)
@@ -310,7 +330,53 @@ module painter(
 			what_is_painted = POINTER_PAINTED;
 		end
 		PAINTING_UPPER:
-			PAINTING_STAGE = PAINTING_BOARD;
+		begin
+		  if(winning_information == `WINNING_GAMING)
+		  	PAINTING_STAGE = PAINTING_BOARD;
+		  else
+		  begin
+			PAINTING_STAGE = PAINTING_VICTORY;
+		  end
+		end
+
+		PAINTING_VICTORY:
+		begin
+		  paint_vic_start_working = 1;
+		  PAINTING_STAGE = PAINTING_VICTORY_LOAD1;
+		end
+		PAINTING_VICTORY_LOAD1:
+		  PAINTING_STAGE = PAINTING_VICTORY_LOAD2;
+		PAINTING_VICTORY_LOAD2:
+		begin
+		  PAINTING_STAGE = PAINTING_VICTORY_WAIT;
+		  counter = 79 * 31 * `ENSURE;
+		end
+		  
+		PAINTING_VICTORY_WAIT:
+		begin
+		  paint_vic_start_working = 0;
+		  if(counter == 0)
+		  	PAINTING_STAGE = PAINTING_VICTORY_CHESS;
+		  else
+		  	counter = counter - 1;
+		end
+
+		PAINTING_VICTORY_CHESS:
+		begin
+		  paint_vic_chess_start_working = 1;
+		  PAINTING_STAGE = PAINTING_VICTORY_CHESS_LOAD1;
+		end
+		PAINTING_VICTORY_CHESS_LOAD1:
+			PAINTING_STAGE = PAINTING_VICTORY_CHESS_LOAD2;
+		PAINTING_VICTORY_CHESS_LOAD2: // No more waiting, it just stop working right away.
+			PAINTING_STAGE = PAINTING_VICTORY_CHESSS_WAIT;	
+		PAINTING_VICTORY_CHESSS_WAIT:
+			begin
+			  paint_vic_chess_start_working = 0;
+			  PAINTING_STAGE = PAINTING_DEAD;
+			end
+		PAINTING_DEAD:
+			PAINTING_STAGE = PAINTING_DEAD;
 		endcase
 
 	end
