@@ -1,7 +1,7 @@
 from typing import Union
 import struct
 
-debug = False
+debug = True
 
 
 class NONE:
@@ -70,7 +70,7 @@ value_type = {
 
 } [value_length]
 
-value_mapping = lambda x: int(x / original_range * value_range)
+value_mapping = lambda x: int(x / original_range * value_range + 0.5)
 
 input_file = open(input_file_path, 'r')
 content = input_file.read().split()

@@ -15,12 +15,12 @@ module painter(
 	// input : the clock
 	Reset,
     // input : indicating the reset
-	paint_x_co,
-	paint_y_co,
+	paint_x_co_all_dimension,
+	paint_y_co_all_dimension,
 	// output : The output for the coordinates of x and y
-	color,
+	color_all_dimension_output,
 	// output : The color information which is going to be written to memory
-	print_enable
+	print_enable_all_dimension
 	// output : The output indicating starting to write information to the memory
 	);
 	
@@ -29,24 +29,39 @@ module painter(
 	input [`BOARD_WIDTH_BITS - 1 : 0] pointer_loc_x;
 	input [`BOARD_HEIGHT_BITS - 1 : 0] pointer_loc_y;
 	input Clck, Reset;
-	output print_enable;
+	output print_enable_all_dimension;
+	output [`COLOR_SIZE - 1 : 0] color_all_dimension_output; 
+	output [`SCR_WIDTH_BITS - 1 : 0] paint_x_co_all_dimension;
+	output [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co_all_dimension;
+
+	
 	reg [`COLOR_SIZE - 1 : 0] color_input;
-	output [`COLOR_SIZE - 1 : 0] color;
-	output [`SCR_WIDTH_BITS - 1 : 0] paint_x_co;
-	output [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co;
+	wire [`COLOR_SIZE - 1 : 0] color, color_board, color_vic, color_vic_chess;
+
+
+	wire [`SCR_WIDTH_BITS - 1 : 0] paint_x_co_chess, paint_x_co_board, paint_x_co_vic, paint_x_co_vic_chess;
+	wire [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co_chess, paint_y_co_board, paint_y_co_vic, paint_y_co_vic_chess;
+	wire print_enable_chess, print_enable_board, print_enable_vic, print_enable_vic_chess;
+
 
 
 	reg [2:0] PAINTING_STAGE;
 	reg [2:0] PAINTING_CONFIG;
 	reg [`BOARD_WIDTH_BITS : 0] board_x;
 	reg [`BOARD_HEIGHT_BITS : 0] board_y;
+	reg [`SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE - 1 : 0] bare_board, victory_pic;
 
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
 
-	reg paint_chess_start_working;
+	reg paint_chess_start_working, paint_board_start_working, paint_vic_start_working;
 	reg [2:0] what_is_painted;
 	reg [31:0] counter;
+
+	assign color_all_dimension_output = color | color_board | color_vic | color_vic_chess;
+	assign paint_x_co_all_dimension = paint_x_co_chess | paint_x_co_board | paint_x_co_vic | paint_x_co_vic_chess;
+	assign paint_y_co_all_dimension = paint_y_co_chess | paint_y_co_board | paint_y_co_vic | paint_y_co_vic_chess;
+	assign print_enable_all_dimension = print_enable_chess | print_enable_board | print_enable_vic | print_enable_vic_chess;
 
 
 
@@ -61,7 +76,8 @@ module painter(
 				NOTHING_PAINTED = 3'd0,
 				CHESSES_PAINTED = 3'd1,
 				CHESSES_NOT_PAINTED_YET = 3'd2,
-				POINTER_PAINTED = 3'd3;
+				POINTER_PAINTED = 3'd3,
+				VICTORY_CHESS_PAINTED = 3'd4;
 
 	initial
 	begin
@@ -76,6 +92,8 @@ module painter(
 	  pixel_y_end = 0;
 	  what_is_painted = NOTHING_PAINTED;
 	  paint_chess_start_working = 0;
+	  paint_board_start_working = 0;
+	  paint_chess_start_working = 0;
 	  color_input = 0;
 	end
 
@@ -88,10 +106,10 @@ module painter(
 	// input : the end point for x  coordinate
 	.pixel_y_end(pixel_y_end),
 	// input : the end point for y coordinate
-	.paint_x_co(paint_x_co),
-	.paint_y_co(paint_y_co),
+	.paint_x_co(paint_x_co_chess),
+	.paint_y_co(paint_y_co_chess),
 	// output : the video coordinates to write with
-	.print_enable(print_enable),
+	.print_enable(print_enable_chess),
 	// output : the enabling for writing
 	.Clck(Clck),
 	// input : Clock,
@@ -101,12 +119,87 @@ module painter(
 	// input : the configurance
 	.color(color_input),
 	// input : the input preference color 
-
 	.color_output(color),
 	// output : the real output color
 	.Reset(Reset)
 	);
 
+	paint_pic paint_board(
+	.working(paint_board_start_working),
+	// input : indicating working started, 
+	.Clck(Clck),
+	// input : the clock pulse
+	.board_pic(bare_board),
+	// input : at maximum size of `SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE
+	.pixel_x_start(`SCR_WIDTH_BITS'd0),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_x_end(`SCR_WIDTH_BITS'd`SCR_WIDTH),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_y_start(`SCR_HEIGHT_BITS'd0),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_y_end(`SCR_HEIGHT_BITS'd`SCR_HEIGHT),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_x_co(paint_x_co_board),
+	.pixel_y_co(paint_y_co_board),
+	// output : indicating which coordinate should be written to
+	.color_output(color_board),
+	// output : the color to output to vga
+	.print_enable(print_enable_board)
+	// output : make vga working now
+	);
+
+	paint_pic paint_vic(
+	.working(paint_vic_start_working),
+	// input : indicating working started, 
+	.Clck(Clck),
+	// input : the clock pulse
+	.board_pic(victory_pic),
+	// input : at maximum size of `SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE
+	.pixel_x_start(`SCR_WIDTH_BITS'd0),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_x_end(`SCR_WIDTH_BITS'd80),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_y_start(`SCR_HEIGHT_BITS'd0),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_y_end(`SCR_HEIGHT_BITS'd31),
+	// input : indicating the start point of the pixel_x_co
+	.pixel_x_co(paint_x_co_vic),
+	.pixel_y_co(paint_y_co_vic),
+	// output : indicating which coordinate should be written to
+	.color_output(color_vic),
+	// output : the color to output to vga
+	.print_enable(print_enable_vic)
+	// output : make vga working now
+	);
+
+
+	paint_chess victory_chess(
+	.pixel_x_start(`SCR_WIDTH_BITS'd80),
+	// input : the start point for x coordinate
+	.pixel_y_start(`SCR_HEIGHT_BITS'd0),
+	// input : the start point for y coordinate
+	.pixel_x_end(`SCR_WIDTH_BITS'd112),
+	// input : the end point for x  coordinate
+	.pixel_y_end(`SCR_WIDTH_BITS'd112),
+	// input : the end point for y coordinate
+	.paint_x_co(paint_x_co_vic_chess),
+	.paint_y_co(paint_y_co_chess),
+	// output : the video coordinates to write with
+	.print_enable(print_enable_chess),
+	// output : the enabling for writing
+	.Clck(Clck),
+	// input : Clock,
+	.working(paint_chess_start_working),
+	// input : indicating start working, continue for one clock cycle is ok
+	.configure(PAINTING_CONFIG),
+	// input : the configurance
+	.color(color_input),
+	// input : the input preference color 
+	.color_output(color),
+	// output : the real output color
+	.Reset(Reset)
+
+	);
 
 	always@(posedge Clck)
 	begin
@@ -350,7 +443,11 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 						if(pixel_x >= pixel_x_reco_end - 1 &&
 							pixel_y >= pixel_y_end - 1)
 						begin
-							CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;	
+							CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;
+							pixel_x_co = 0;
+							pixel_y_co = 0;	
+							color_output = 0;
+							print_enable = 0;
 						end
 						else
 						if(pixel_x >= pixel_x_reco_end - 1)
@@ -384,5 +481,124 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 		  
 
 	end
+
+endmodule
+
+
+
+module paint_pic(
+	working,
+	// input : indicating working started, 
+	Clck,
+	// input : the clock pulse
+	board_pic,
+	// input : at maximum size of `SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE
+	pixel_x_start,
+	// input : indicating the start point of the pixel_x_co
+	pixel_x_end,
+	// input : indicating the start point of the pixel_x_co
+	pixel_y_start,
+	// input : indicating the start point of the pixel_x_co
+	pixel_y_end,
+	// input : indicating the start point of the pixel_x_co
+	pixel_x_co,
+	pixel_y_co,
+	// output : indicating which coordinate should be written to
+	color_output,
+	// output : the color to output to vga
+	print_enable
+	// output : make vga working now
+);
+	
+
+	input [`SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE - 1 : 0] board_pic;
+	output reg [`COLOR_SIZE - 1 : 0] color_output;
+	output reg print_enable;
+	output reg [`SCR_HEIGHT_BITS - 1: 0] pixel_x;
+	output reg [`SCR_WIDTH_BITS - 1: 0] pixel_y;
+
+	localparam 
+		PRINTINGPIC_WAITING_FOR_START = 3'd0,
+		PRINTINGPIC_LOAD = 3'd1,
+		PRINTINGPIC_EN1 = 3'd2,
+		PRINTINGPIC_EN2 = 3'd3,
+		PRINTINGPIC_DE = 3'd4,
+		PRINTINGPIC_NEXT_VAL = 3'd5,
+		PRINTINGPIC_END = 3'd6;
+
+
+	reg [2:0] PRINT_PIC_STATUS;
+
+	reg [`SCR_HEIGHT_BITS - 1: 0] pixel_x;
+	reg [`SCR_WIDTH_BITS - 1: 0] pixel_y;
+
+	initial
+	begin
+	  PRINT_PIC_STATUS = PRINTING_WAITING_FOR_START;
+	  pixel_x = 0;
+	  pixel_y = 0;
+
+	end 
+
+	always@(posedge Clck) begin
+	  case(PRINT_PIC_STATUS)
+	  PRINTINGPIC_WAITING_FOR_START :
+	  begin
+		if(working == 1'b1) begin
+		  pixel_x = pixel_x_start;
+		  pixel_y = pixel_y_start;
+		  PRINT_PIC_STATUS = PRINTING_LOAD;
+		end
+	  end
+	  PRINTINGPIC_LOAD:
+	  begin
+`define MAP_XYPIXELCO_REGCO(x,y) (x * `COLOR_SIZE + y * `COLOR_SIZE * (pixel_x_end - pixel_x_start))
+		color_output = board_pic[`MAP_XYPIXELCO_REGCO(pixel_x, pixel_y) +: `COLOR_SIZE];
+		pixel_x_co = pixel_x;
+		pixel_y_co = pixel_y;
+		print_enable = 1;
+		PRINT_PIC_STATUS = PRINTINGPIC_EN1;
+	  end
+	  PRINTINGPIC_EN1:
+	  	PRINT_PIC_STATUS = PRINTINGPIC_EN2;
+	  PRINTINGPIC_EN2:
+	  	PRINT_PIC_STATUS = PRINTINGPIC_DE;
+	  PRINTINGPIC_DE:
+	  begin
+		print_enable = 0;
+		PRINT_PIC_STATUS = PRINTINGPIC_NEXT_VAL;
+	  end
+	  	
+	  PRINTINGPIC_NEXT_VAL:
+	  begin
+		if(pixel_x >= pixel_x_end - 1 &&
+			pixel_y >= pixel_y_end - 1)
+		begin 
+			//END:
+			PRINT_PIC_STATUS = PRINTING_WAITING_FOR_START;
+			pixel_x_co = 0;
+			pixel_y_co = 0;
+			print_enable = 0;
+			color_output = 0;
+		end
+		else
+			if(pixel_x >= pixel_x_end - 1)
+			begin
+			  pixel_x = 0;
+			  pixel_y = pixel_y + 1'b1;
+			  PRINT_PIC_STATUS = PRINTING_LOAD;
+			end
+			else
+			begin
+			  PRINT_PIC_STATUS = PRINTING_LOAD;
+			  pixel_x = pixel_x + 1;
+			end
+				
+	  end
+
+
+
+	end
+
 
 endmodule
