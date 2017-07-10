@@ -45,7 +45,7 @@ module painter(
 
 
 
-	reg [2:0] PAINTING_STAGE;
+	reg [4:0] PAINTING_STAGE;
 	reg [2:0] PAINTING_CONFIG;
 	reg [`BOARD_WIDTH_BITS : 0] board_x;
 	reg [`BOARD_HEIGHT_BITS : 0] board_y;
@@ -54,7 +54,7 @@ module painter(
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
 
-	reg paint_chess_start_working, paint_board_start_working, paint_vic_start_working;
+	reg paint_chess_start_working, paint_board_start_working, paint_vic_start_working, paint_vic_chess_start_working;
 	reg [2:0] what_is_painted;
 	reg [31:0] counter;
 
@@ -65,14 +65,26 @@ module painter(
 
 
 
-	localparam 	PAINTING_BOARD = 3'd00,
-				PAINTING_CHESS_LOAD1 = 3'd01,
-				PAINTING_CHESS_LOAD2 = 3'd02,
-				PAINTING_CHESS_LOAD3 = 3'd03,
-				PAINTING_CHESS_LOAD4 = 3'd04,
-				PAINTING_CHESS = 3'd05,
-				PAINTING_POINT = 3'd06,
-				PAINTING_UPPER = 3'd07,
+	localparam 	PAINTING_BOARD = 5'd0,
+				PAINTING_CHESS_LOAD1 = 5'd1,
+				PAINTING_CHESS_LOAD2 = 5'd2,
+				PAINTING_CHESS_LOAD3 = 5'd3,
+				PAINTING_CHESS_LOAD4 = 5'd4,
+				PAINTING_CHESS = 5'd5,
+				PAINTING_POINT = 5'd6,
+				PAINTING_UPPER = 5'd7,
+				PAINTING_BOARD_LOAD1 = 5'd8,
+				PAINTING_BOARD_LOAD2 = 5'd9,
+				PAINTING_BOARD_WAIT = 5'd10,
+				PAINTING_VICTORY = 5'd11,
+				PAINTING_VICTORY_LOAD1 = 5'd12,
+				PAINTING_VICTORY_LOAD2 = 5'd13,
+				PAINTING_VICTORY_WAIT = 5'd14,
+				PAINTING_VICTORY_CHESS = 5'd15,
+				PAINTING_VICTORY_CHESS_LOAD1 = 5'd16,
+				PAINTING_VICTORY_CHESS_LOAD2 = 5'd17,
+				PAINTING_VICTORY_CHESSS_WAIT = 5'd18,
+				PAINTING_DEAD = 5'd19,
 				NOTHING_PAINTED = 3'd0,
 				CHESSES_PAINTED = 3'd1,
 				CHESSES_NOT_PAINTED_YET = 3'd2,
@@ -180,22 +192,22 @@ module painter(
 	// input : the start point for y coordinate
 	.pixel_x_end(`SCR_WIDTH_BITS'd112),
 	// input : the end point for x  coordinate
-	.pixel_y_end(`SCR_WIDTH_BITS'd112),
+	.pixel_y_end(`SCR_WIDTH_BITS'd131),
 	// input : the end point for y coordinate
 	.paint_x_co(paint_x_co_vic_chess),
-	.paint_y_co(paint_y_co_chess),
+	.paint_y_co(paint_y_co_vic_chess),
 	// output : the video coordinates to write with
-	.print_enable(print_enable_chess),
+	.print_enable(print_enable_vic_chess),
 	// output : the enabling for writing
 	.Clck(Clck),
 	// input : Clock,
-	.working(paint_chess_start_working),
+	.working(paint_vic_chess_start_working),
 	// input : indicating start working, continue for one clock cycle is ok
-	.configure(PAINTING_CONFIG),
+	.configure(`PAINTING_CONFIG_CIRCLE),
 	// input : the configurance
 	.color(color_input),
 	// input : the input preference color 
-	.color_output(color),
+	.color_output(color_vic_chess),
 	// output : the real output color
 	.Reset(Reset)
 
