@@ -358,7 +358,7 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y;
 							pixel_y = pixel_y + 1'b1;
 							new_x = pixel_y - pixel_y_start;
 							new_x = (new_x > chess_radius ? (new_x - chess_radius) : (chess_radius - new_x));
-							new_x = (chess_radius * chess_radius - new_x * new_x) / (chess_radius);
+							new_x = (chess_radius * chess_radius * chess_radius - new_x * new_x) / (chess_radius * chess_radius);
 							case(configure)
 							`PAINTING_CONFIG_CIRCLE:
 							begin
