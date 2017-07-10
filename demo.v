@@ -33,7 +33,7 @@ module FiveSons(
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
-    reg [255 : 0] board;
+    reg [511 : 0] board;
 
 llabs labs(
 	.working(KEY[0]),
