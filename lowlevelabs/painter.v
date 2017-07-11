@@ -495,12 +495,15 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 						if(working == 1)
 						begin
 						  half_x =  ({2'b0, pixel_x_start} + {2'b0, pixel_x_end}) / (2'd2);
+						  	new_x = pixel_y - pixel_y_start;
+							new_x = (new_x > chess_radius ? (new_x - chess_radius) : (chess_radius - new_x));
+							new_x = (chess_radius * chess_radius * chess_radius - new_x * new_x * new_x) / (chess_radius * chess_radius);
 						  chess_radius = (pixel_y_end - pixel_y_start) / (2'd2);
 						  case(configure)
 						  `PAINTING_CONFIG_CIRCLE:
 						  begin
-						  	pixel_x_reco_start = half_x - 1'b1;
-						  	pixel_x_reco_end = half_x + 1'b1;
+						  	pixel_x_reco_start = half_x - new_x;
+						  	pixel_x_reco_end = half_x + new_x;
 						  end
 						  `PAINTING_CONFIG_SQUARE:
 						  begin

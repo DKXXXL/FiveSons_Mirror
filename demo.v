@@ -41,14 +41,14 @@ reg reset = 1;
 reg [1:0] gaming_status;
 reg [3:0] pointer_loc_x, pointer_loc_y;
 
-//
-//initial
-//begin
-//  board = 0 - 1;
-//  gaming_status = 2'b10;
-//  pointer_loc_x = 4;
-//  pointer_loc_y = 6;
-//end
+
+initial
+begin
+  board = 0;
+  gaming_status = 2'b00;
+  pointer_loc_x = 4;
+  pointer_loc_y = 6;
+end
 
 llabs labs(
 	// input : change indicating startworking, can't be stopped
@@ -83,6 +83,7 @@ llabs labs(
         board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 1] = 2'b01; 
       end
     end
+
 
 
 
