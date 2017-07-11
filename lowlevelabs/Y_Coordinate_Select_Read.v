@@ -6,9 +6,9 @@
 module Y_Coordinate_Select_Read(in, select, out);
     input [31:0] in; // 16*2 input data
     input [3:0] select; // 4-bit select signal
-    output reg [1:0] out; //output line
+    output [1:0] out; //output line
 
-    //According to te select signal, put the right input data to the output line
-    Select16to1(.in(in), .select(select), .out(point_out));
+    //According to the select signal, put the right input data to the output line
+    Select16to1 getDataFromPoint(.in(in), .select(select), .out(out));
 
 endmodule

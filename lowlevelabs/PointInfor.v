@@ -10,7 +10,7 @@ module PointInfor(d, clock, reset, q);
     //Instantiate the flip flop for the higher bit of the information 
     D_Flip_Flop first_bit(.d(d[1]), .clock(clock), .reset(reset), .q(q[1]));
     //Instantiate the flip flop for the lower bit of the information 
-    D_Flip_Flop first_bit(.d(d[0]), .clock(clock), .reset(reset), .q(q[0]));
+    D_Flip_Flop second_bit(.d(d[0]), .clock(clock), .reset(reset), .q(q[0]));
     
     
 endmodule
