@@ -65,4 +65,4 @@
 
 `define COOR_TO_OFFSET(x, y) (x + (y * `SCR_WIDTH))
 
-`define ENSURE 10
+`define ENSURE 20
