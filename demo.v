@@ -38,7 +38,14 @@ module FiveSons(
 	reg [3 : 0] pointer_loc_x;
 	reg [3 : 0] pointer_loc_y;
 
+initial
+begin
+board = 512'd15;
+pointer_loc_x = 1;
+pointer_loc_y = 3;
+gaming_status = 0;
 
+end
 
 
 
