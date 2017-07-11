@@ -683,7 +683,7 @@ module paint_pic(
 		else
 			if(pixel_x >= pixel_x_end - 1)
 			begin
-			  pixel_x = 0;
+			  pixel_x = pixel_x_start;
 			  pixel_y = pixel_y + 1'b1;
 			  PRINT_PIC_STATUS = PRINTINGPIC_LOAD;
 			end
