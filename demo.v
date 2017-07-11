@@ -34,8 +34,8 @@ module FiveSons(
 
     reg [511 : 0] board;
 	 reg [1:0] gaming_status;
-	reg [15 : 0] pointer_loc_x;
-	reg [15: 0] pointer_loc_y;
+	reg [15 : 0] pointer_loc_x = 5;
+	reg [15: 0] pointer_loc_y = 6;
 	initial
 	begin
 		board = 512'd15;
@@ -70,13 +70,14 @@ llabs labs(
 
 
 
-    always@(*)
-    begin
-      if(KEY[1] == 1'b1)
+always@(posedge CLOCK_50)
+begin
+	   if(SW[16] == 1'b1)
       begin
-        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b10; 
+        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01; 
       end
-    end
+		
+end
 
 
 
