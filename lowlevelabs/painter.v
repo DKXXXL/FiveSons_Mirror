@@ -38,8 +38,8 @@ module painter(
 
 	reg [2:0] PAINTING_STAGE;
 	reg [2:0] PAINTING_CONFIG;
-	reg [`BOARD_WIDTH_BITS : 0] board_x;
-	reg [`BOARD_HEIGHT_BITS : 0] board_y;
+	reg [`BOARD_WIDTH_BITS - 1 : 0] board_x;
+	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
 
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
@@ -131,14 +131,14 @@ module painter(
 			begin
 				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != `CHESS_WITH_NONE)
 				begin
-					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x);
-					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x);
-					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y);
-					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y);
+					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x) + 1;
+					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x) - 1;
+					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y) + 1;
+					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y) - 1;
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
-					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
+					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] + 1; 
 					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
-					PAINTING_CONFIG = `PAINTING_CONFIG_CIRCLE;
+					PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
 					paint_chess_start_working = 1;
 				end
 
@@ -271,8 +271,8 @@ output reg print_enable;
 		// PAINTING = 1'd1;
 	
 reg [2:0] CHESS_PAINTING_STAGE;
-reg [`SCR_WIDTH_BITS : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
-reg [`SCR_HEIGHT_BITS : 0] pixel_y;
+reg [`SCR_WIDTH_BITS -1 : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
+reg [`SCR_HEIGHT_BITS - 1: 0] pixel_y;
 
 	initial
 	begin
