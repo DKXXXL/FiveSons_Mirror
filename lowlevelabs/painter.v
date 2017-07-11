@@ -460,7 +460,8 @@ output reg print_enable;
 		// PAINTING = 1'd1;
 	
 reg [2:0] CHESS_PAINTING_STAGE;
-reg [`SCR_WIDTH_BITS : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
+reg [`SCR_WIDTH_BITS : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end;
+reg [31:0] chess_radius, new_x, half_x;
 reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 
 	initial
@@ -468,6 +469,7 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 	  paint_x_co = 0;
 	  paint_y_co = 0;
 	  print_enable = 0;
+	  color_output = 0;
 	  CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;
 	  pixel_x_reco_start = 0;
 	  pixel_x_reco_end = 0;
@@ -634,8 +636,10 @@ module paint_pic(
 	initial
 	begin
 	  PRINT_PIC_STATUS = PRINTINGPIC_WAITING_FOR_START;
-	  pixel_x = 0;
-	  pixel_y = 0;
+	  pixel_x_co = 0;
+	  pixel_y_co = 0;
+	  print_enable = 0;
+	  color_output = 0;
 
 	end 
 

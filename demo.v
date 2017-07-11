@@ -35,9 +35,24 @@ module FiveSons(
 
     reg [511 : 0] board;
 
+parameter PERIOD_clock = 10;
+reg clock = 0;
+reg reset = 1;
+reg [1:0] gaming_status;
+reg [3:0] pointer_loc_x, pointer_loc_y;
+always #PERIOD_clock clock <= !clock;
+
+initial
+begin
+  board = 0 - 1;
+  gaming_status = 2'b10;
+  pointer_loc_x = 4;
+  pointer_loc_y = 6;
+end
+
 llabs labs(
 	// input : change indicating startworking, can't be stopped
-	.Clck(CLOCK_50),
+	.Clck(clock),
 	// input : the clock,
 	.board(board),
 	// input : the board status
@@ -46,7 +61,7 @@ llabs labs(
 	.pointer_loc_x(pointer_loc_x),
 	.pointer_loc_y(pointer_loc_y),
 	// inputs : the location of pointer, x, y coordinate
-	.Reset(Reset),
+	.Reset(reset),
 	// inputs : the reset
 	.VGA_CLK(VGA_CLK), // VGA_CLK;
 	.VGA_HS(VGA_HS), // VGA_H_SYNC
