@@ -51,7 +51,7 @@ module painter(
 	reg [2:0] PAINTING_CONFIG;
 	reg [`BOARD_WIDTH_BITS : 0] board_x;
 	reg [`BOARD_HEIGHT_BITS : 0] board_y;
-	reg [`SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE - 1 : 0] bare_board, victory_pic;
+	reg [`SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE - 1 : 0] bare_board, victory_pic ;
 
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
@@ -92,7 +92,10 @@ module painter(
 				CHESSES_NOT_PAINTED_YET = 3'd2,
 				POINTER_PAINTED = 3'd3,
 				VICTORY_CHESS_PAINTED = 3'd4;
-
+				
+	reg [1024:0] board_bin [3:0];
+	reg [1024:0] victory_bin[3:0];
+	
 	initial
 	begin
 	  PAINTING_STAGE = PAINTING_BOARD;
@@ -108,7 +111,13 @@ module painter(
 	  paint_chess_start_working = 0;
 	  paint_board_start_working = 0;
 	  paint_chess_start_working = 0;
+	  paint_vic_chess_start_working = 0;
+	  paint_vic_start_working = 0;
 	  color_input = 0;
+	  $readmemb("board.bin", board_bin);
+	  $readmemb("winning.bin",victory_bin);
+	  $display(board_bin[0]);
+
 	end
 
 	paint_chess pc(
