@@ -4,7 +4,7 @@ module pointer(inx, iny, reset, loca);
   reg [7:0] loc;
   reg temp;
   always @(posedge inx, posedge iny, posedge reset) begin
-    if (reset == 1'b0)
+    if (reset == 1'b1)
       loc = 8'b0;
     else if (inx == 1'b1)
       loc[3:0] = loc[3:0] + 1'b1;
