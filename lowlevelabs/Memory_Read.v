@@ -54,6 +54,6 @@ module Memory_Read(in, select, out, clock, reset);
 
     //According to the select signal for x coordinate, connect the right output line for each row
     //to output data
-    Select16to1 getDataFromRow(.in(row_out), .select(select[7:4]), .out(out));
+    Select16to1 getDataFromRow(.in(row_out[31:0]), .select(select[7:4]), .out(out[1:0]));
     
 endmodule
