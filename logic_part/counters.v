@@ -1,4 +1,4 @@
-module horizontal_check(reset, active, active_next, address, pointer, chess, success, clk, currstate);
+module horizontal_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
   input active, reset;
   input [7:0] pointer;
   input [1:0] chess, currstate;
@@ -64,7 +64,7 @@ module horizontal_check(reset, active, active_next, address, pointer, chess, suc
   end
 endmodule
 
-module verticle_check(reset, active, active_next, address, pointer, chess, success, clk, currstate);
+module verticle_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
   input active, reset;
   input [7:0] pointer;
   input [1:0] chess, currstate;
@@ -130,7 +130,7 @@ module verticle_check(reset, active, active_next, address, pointer, chess, succe
   end
 endmodule
 
-module lean1_check(reset, active, active_next, address, pointer, chess, success, clk, currstate);
+module lean1_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
   input active, reset;
   input [7:0] pointer;
   input [1:0] chess, currstate;
@@ -213,7 +213,7 @@ module lean1_check(reset, active, active_next, address, pointer, chess, success,
   end
 endmodule
 
-module lean2_check(reset, active, active_next, address, pointer, chess, success, clk, currstate);
+module lean2_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
   input active, reset;
   input [7:0] pointer;
   input [1:0] chess, currstate;
