@@ -127,15 +127,16 @@ module painter(
 		PAINTING_BOARD : PAINTING_STAGE = PAINTING_CHESS_LOAD1;
 		PAINTING_CHESS_LOAD1 :
 			begin
-				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != `CHESS_WITH_NONE)
+				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != 2'b00)
 				begin
-					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x) + 1;
-					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x) - 1;
-					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y) + 1;
-					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y) - 1;
+					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x) + 1'b1;
+					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x) - 1'b1 ;
+					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y) + 1'b1;
+					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y) - 1'b1;
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
-					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
-					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
+					// color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS]
+					color_input = 3'b010;
+					counter = 49 * `ENSURE + 10;
 					paint_chess_start_working = 1;
 				end
 				
@@ -155,8 +156,10 @@ module painter(
 						what_is_painted = CHESSES_NOT_PAINTED_YET;
 					end
 					else
+					begin
 						board_x = board_x + 1'b1;
 						what_is_painted = CHESSES_NOT_PAINTED_YET;
+					end
 				
 			end
 		PAINTING_CHESS_LOAD2:
@@ -186,7 +189,9 @@ module painter(
 			endcase
 		  end
 		  else
+		  begin
 		  	counter = counter - 1;
+		  end
 		end
 		PAINTING_POINT:
 		begin
@@ -332,13 +337,13 @@ reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y, pixel_y_reco_start, pixel_y_reco_end;
 					end
 					CP_NEXT_VAL :
 					begin
-						if(pixel_x == pixel_x_end - 1 &&
-							pixel_y == pixel_y_end - 1)
+						if(pixel_x >= pixel_x_end - 1 &&
+							pixel_y >= pixel_y_end - 1)
 						begin
 							CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;	
 						end
 						else
-						if(pixel_x == pixel_x_end - 1)
+						if(pixel_x >= pixel_x_end - 1)
 						begin
 							pixel_y = pixel_y + 1'b1;
 							pixel_x = pixel_x_start;

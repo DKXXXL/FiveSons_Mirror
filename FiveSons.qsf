@@ -591,4 +591,15 @@ set_global_assignment -name VERILOG_FILE lowlevelabs/llabs.v
 set_global_assignment -name VERILOG_FILE lowlevelabs/header.v
 set_global_assignment -name VERILOG_FILE demo.v
 set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain1.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain2.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain3.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain4.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain5.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain6.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain7.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain8.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain9.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain10.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain11.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain12.cdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

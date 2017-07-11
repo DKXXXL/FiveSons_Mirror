@@ -33,14 +33,14 @@ module FiveSons(
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
-    reg [511 : 0] board;
+    reg [511 : 0] board = 512'b11011011110001101010;
 	 reg [1:0] gaming_status;
 	reg [3 : 0] pointer_loc_x;
 	reg [3 : 0] pointer_loc_y;
 
 initial
 begin
-board = 512'd15;
+board = 512'b11011011110001101010;
 pointer_loc_x = 1;
 pointer_loc_y = 3;
 gaming_status = 0;
@@ -72,16 +72,14 @@ llabs labs(
 	
 );
 
-
-
-
-    always@(*)
-    begin
-      if(KEY[1] == 1'b1)
+always@(posedge CLOCK_50)
+begin
+	   if(SW[16] == 1'b1)
       begin
         board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01; 
       end
-    end
+		
+end
 
 
 

@@ -45,6 +45,23 @@ module llabs(
 	wire [`COLOR_SIZE - 1 : 0] color_output;
 	wire print_enable;
 
+	
+//	parameter PERIOD_clock = 10;
+//
+//    reg clock = 0;
+//	 reg [4:0] counter = 0;
+//	always@(posedge Clck) begin
+//		if(counter == 0) begin
+//			clock <=! clock;
+//			counter = 5'd31;
+//		end
+//		else
+//		begin
+//			counter = counter - 1;
+//		end
+//	
+//	end
+	
  painter pt(
 	.board(board),
 	// input : the huge number of wires indicating a board
