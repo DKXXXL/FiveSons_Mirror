@@ -57,12 +57,12 @@ module llabs(
 	// input : the clock
 	.Reset(Reset),
     // input : indicating the reset
-	.paint_x_co(x_co),
-	.paint_y_co(y_co),
+	.paint_x_co_all_dimension(x_co),
+	.paint_y_co_all_dimension(y_co),
 	// output : The output for the coordinates of x and y
-	.color(color_output),
+	.color_all_dimension_output(color_output),
 	// output : The color information which is going to be written to memory
-	.print_enable(print_enable)
+	.print_enable_all_dimension(print_enable)
 	// output : The output indicating starting to write information to the memory
 	);
 

@@ -1,4 +1,6 @@
 `include "header.v"
+
+
 `define PAINTING_CONFIG_SQUARE 3'b000
 `define PAINTING_CONFIG_CIRCLE 3'b001
 
@@ -192,7 +194,7 @@ module painter(
 	// input : the start point for y coordinate
 	.pixel_x_end(`SCR_WIDTH_BITS'd112),
 	// input : the end point for x  coordinate
-	.pixel_y_end(`SCR_WIDTH_BITS'd131),
+	.pixel_y_end(`SCR_WIDTH_BITS'd31),
 	// input : the end point for y coordinate
 	.paint_x_co(paint_x_co_vic_chess),
 	.paint_y_co(paint_y_co_vic_chess),
@@ -522,8 +524,8 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 							pixel_y >= pixel_y_end - 1)
 						begin
 							CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;
-							pixel_x_co = 0;
-							pixel_y_co = 0;	
+							paint_x_co = 0;
+							paint_y_co = 0;
 							color_output = 0;
 							print_enable = 0;
 						end
@@ -590,10 +592,13 @@ module paint_pic(
 	
 
 	input [`SCR_HEIGHT * `SCR_WIDTH * `COLOR_SIZE - 1 : 0] board_pic;
+	input working, Clck;
+	input [`SCR_WIDTH_BITS - 1: 0] pixel_x_start, pixel_x_end;
+	input [`SCR_HEIGHT_BITS- 1: 0] pixel_y_start, pixel_y_end;
 	output reg [`COLOR_SIZE - 1 : 0] color_output;
 	output reg print_enable;
-	output reg [`SCR_HEIGHT_BITS - 1: 0] pixel_x;
-	output reg [`SCR_WIDTH_BITS - 1: 0] pixel_y;
+	output reg [`SCR_HEIGHT_BITS - 1: 0] pixel_x_co;
+	output reg [`SCR_WIDTH_BITS - 1: 0] pixel_y_co;
 
 	localparam 
 		PRINTINGPIC_WAITING_FOR_START = 3'd0,
@@ -612,7 +617,7 @@ module paint_pic(
 
 	initial
 	begin
-	  PRINT_PIC_STATUS = PRINTING_WAITING_FOR_START;
+	  PRINT_PIC_STATUS = PRINTINGPIC_WAITING_FOR_START;
 	  pixel_x = 0;
 	  pixel_y = 0;
 
@@ -625,7 +630,7 @@ module paint_pic(
 		if(working == 1'b1) begin
 		  pixel_x = pixel_x_start;
 		  pixel_y = pixel_y_start;
-		  PRINT_PIC_STATUS = PRINTING_LOAD;
+		  PRINT_PIC_STATUS = PRINTINGPIC_LOAD;
 		end
 	  end
 	  PRINTINGPIC_LOAD:
@@ -653,7 +658,7 @@ module paint_pic(
 			pixel_y >= pixel_y_end - 1)
 		begin 
 			//END:
-			PRINT_PIC_STATUS = PRINTING_WAITING_FOR_START;
+			PRINT_PIC_STATUS = PRINTINGPIC_WAITING_FOR_START;
 			pixel_x_co = 0;
 			pixel_y_co = 0;
 			print_enable = 0;
@@ -664,15 +669,16 @@ module paint_pic(
 			begin
 			  pixel_x = 0;
 			  pixel_y = pixel_y + 1'b1;
-			  PRINT_PIC_STATUS = PRINTING_LOAD;
+			  PRINT_PIC_STATUS = PRINTINGPIC_LOAD;
 			end
 			else
 			begin
-			  PRINT_PIC_STATUS = PRINTING_LOAD;
-			  pixel_x = pixel_x + 1;
+			  PRINT_PIC_STATUS = PRINTINGPIC_LOAD;
+			  pixel_x = pixel_x + 1'b1;
 			end
 				
 	  end
+	  endcase
 
 
 

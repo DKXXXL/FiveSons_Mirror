@@ -36,7 +36,6 @@ module FiveSons(
     reg [511 : 0] board;
 
 llabs labs(
-	.working(KEY[0]),
 	// input : change indicating startworking, can't be stopped
 	.Clck(CLOCK_50),
 	// input : the clock,
