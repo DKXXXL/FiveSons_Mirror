@@ -20,11 +20,13 @@ module Main(KEY, CLOCK_50, state);
     input KEY[3:0];
     input CLOCK_50;
     output state[1:0]
-    wire pulse;
+    wire reset_pulse;
+    wire active_pulse;
     wire pointer;
-    reg pulse_gen;
+    reg active_pulse_gen;
+    reg reset_pulse_gen;
     reg active_checker;
-    reg currplayer;
+    reg currplayer[1:0];
     reg currstate[1:0];
     assign state = currstate;
 
@@ -35,7 +37,8 @@ module Main(KEY, CLOCK_50, state);
         pulse_gen = 1'b0;
     end
 
-    posedge_gen gen(pulse_gen, pulse, CLOCK_50);
-    pointer pit(KEY[3], KEY[2], pulse, pointer);
-    overall_check allck(pulse, active_checker, pointer, )
+    posedge_gen gen(reset_pulse_gen, reset_pulse, CLOCK_50);
+    posedge_gen gen2(active_pulse_gen, active_pulse, CLOCK_50);
+    pointer pit(KEY[3], KEY[2], pos_pulse, pointer);
+    overall_check allck(reset_pulse, active_checker, pointer, )
     
