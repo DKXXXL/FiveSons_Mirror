@@ -273,8 +273,8 @@ output reg print_enable;
 		// PAINTING = 1'd1;
 	
 reg [2:0] CHESS_PAINTING_STAGE;
-reg [`SCR_WIDTH_BITS -1 : 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
-reg [`SCR_HEIGHT_BITS - 1: 0] pixel_y;
+reg [`SCR_WIDTH_BITS: 0] pixel_x, pixel_x_reco_start, pixel_x_reco_end, chess_radius, new_x, half_x;
+reg [`SCR_HEIGHT_BITS: 0] pixel_y;
 
 	initial
 	begin
