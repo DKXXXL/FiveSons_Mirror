@@ -274,10 +274,10 @@ module painter(
 			begin
 				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != `CHESS_WITH_NONE)
 				begin
-					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x);
-					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x);
-					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y);
-					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y);
+					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x) + 1;
+					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x) - 1;
+					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y) + 1;
+					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y) - 1;
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
 					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
 					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
@@ -291,7 +291,7 @@ module painter(
 				  board_x = 0;
 				  board_y = 0;
 				  what_is_painted = CHESSES_PAINTED;
-				  PAINTING_STAGE = PAINTING_UPPER;
+				  PAINTING_STAGE = PAINTING_CHESS_LOAD2;
 				end
 				else
 					if(board_x >= `BOARD_WIDTH - 1)
