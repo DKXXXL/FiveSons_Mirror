@@ -286,7 +286,8 @@ module painter(
 				end
 
 				// Change board_x, board_y, move to next location
-				if(board_y >= `BOARD_HEIGHT)
+				if(board_x >= `BOARD_WIDTH - 1 &&
+					board_y >= `BOARD_HEIGHT - 1)
 				begin
 				  board_x = 0;
 				  board_y = 0;
