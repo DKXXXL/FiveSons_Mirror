@@ -69,7 +69,7 @@ module painter(
 
 	localparam 	PAINTING_BOARD = 5'd0,
 				PAINTING_CHESS_LOAD1 = 5'd1,
-				PAINTING_CHESS_LOAD2 = 5'd2,
+				PAINTING_CHESS_LOAD2 = 5'd2, 
 				PAINTING_CHESS_LOAD3 = 5'd3,
 				PAINTING_CHESS_LOAD4 = 5'd4,
 				PAINTING_CHESS = 5'd5,
