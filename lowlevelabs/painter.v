@@ -281,7 +281,7 @@ module painter(
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
 					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
 					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
-					PAINTING_CONFIG = `PAINTING_CONFIG_CIRCLE;
+					PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
 					paint_chess_start_working = 1;
 				end
 
