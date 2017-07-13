@@ -38,8 +38,8 @@ module painter(
 
 	reg [2:0] PAINTING_STAGE;
 	reg [2:0] PAINTING_CONFIG;
-	reg [`BOARD_WIDTH_BITS- 1 : 0] board_x;
-	reg [`BOARD_HEIGHT_BITS - 1 : 0] board_y;
+	reg [`BOARD_WIDTH_BITS: 0] board_x;
+	reg [`BOARD_HEIGHT_BITS: 0] board_y;
 
 	reg [`SCR_WIDTH_BITS - 1 : 0] pixel_x_start, pixel_x_end;
 	reg [`SCR_HEIGHT_BITS - 1 : 0] pixel_y_start, pixel_y_end;
