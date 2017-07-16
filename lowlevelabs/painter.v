@@ -274,10 +274,10 @@ module painter(
 			begin
 				if(board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS] != `CHESS_WITH_NONE)
 				begin
-					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x) + 1;
-					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x) - 1;
-					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y) + 1;
-					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y) - 1;
+					pixel_x_start = `MAP_BOARDXCO_PIXELXCOSTART(board_x) + 1'b1;
+					pixel_x_end = `MAP_BOARDXCO_PIXELXCOEND(board_x) - 1'b1;
+					pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(board_y) + 1'b1;
+					pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(board_y) - 1'b1;
 					PAINTING_STAGE = PAINTING_CHESS_LOAD2;
 					color_input = board[`MAP_BOARDXY_BOARDCO(board_x, board_y) +: `CHESS_STATUS_BITS];
 					counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
@@ -302,8 +302,10 @@ module painter(
 						what_is_painted = CHESSES_NOT_PAINTED_YET;
 					end
 					else
+					begin
 						board_x = board_x + 1'b1;
 						what_is_painted = CHESSES_NOT_PAINTED_YET;
+					end
 				
 			end
 		PAINTING_CHESS_LOAD2:
@@ -499,6 +501,7 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 						  	new_x = pixel_y - pixel_y_start;
 							new_x = (new_x > chess_radius ? (new_x - chess_radius) : (chess_radius - new_x));
 							new_x = (chess_radius * chess_radius * chess_radius - new_x * new_x * new_x) / (chess_radius * chess_radius);
+							// need change to bank rounding
 						  chess_radius = (pixel_y_end - pixel_y_start) / (2'd2);
 						  case(configure)
 						  `PAINTING_CONFIG_CIRCLE:

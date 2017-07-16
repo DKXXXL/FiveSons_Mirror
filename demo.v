@@ -44,7 +44,7 @@ reg [3:0] pointer_loc_x, pointer_loc_y;
 
 initial
 begin
-  board = 0;
+  board = 0 - 1;
   gaming_status = 2'b00;
   pointer_loc_x = 4;
   pointer_loc_y = 6;
@@ -78,7 +78,7 @@ llabs labs(
 
     always@(*)
     begin
-      if(KEY[1] == 1)
+      if(SW[16] == 1)
       begin
         board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 1] = 2'b01; 
       end
