@@ -223,7 +223,7 @@ module painter(
 	// input : indicating start working, continue for one clock cycle is ok
 	.configure(`PAINTING_CONFIG_CIRCLE),
 	// input : the configurance
-	.color(color_input),
+	.color(color_input), 
 	// input : the input preference color 
 	.color_output(color_vic_chess),
 	// output : the real output color
@@ -476,6 +476,11 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 	  CHESS_PAINTING_STAGE = CP_WAITING_FOR_START;
 	  pixel_x_reco_start = 0;
 	  pixel_x_reco_end = 0;
+	  chess_radius = 0;
+	  new_x = 0;
+	  half_x = 0;
+	  pixel_x = 0;
+	  pixel_y = 0;
 	end
 
 	always@(posedge Clck)
@@ -497,12 +502,14 @@ reg [`SCR_HEIGHT_BITS : 0] pixel_y;
 					CP_WAITING_FOR_START:
 						if(working == 1)
 						begin
-						  half_x =  ({2'b0, pixel_x_start} + {2'b0, pixel_x_end}) / (2'd2);
+							pixel_y = pixel_y_start;
+							chess_radius = (pixel_y_end - pixel_y_start) / (2'd2);
+						  	half_x =  ({2'b0, pixel_x_start} + {2'b0, pixel_x_end}) / (2'd2);
 						  	new_x = pixel_y - pixel_y_start;
 							new_x = (new_x > chess_radius ? (new_x - chess_radius) : (chess_radius - new_x));
 							new_x = (chess_radius * chess_radius * chess_radius - new_x * new_x * new_x) / (chess_radius * chess_radius);
 							// need change to bank rounding
-						  chess_radius = (pixel_y_end - pixel_y_start) / (2'd2);
+						  
 						  case(configure)
 						  `PAINTING_CONFIG_CIRCLE:
 						  begin
