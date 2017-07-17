@@ -55,7 +55,7 @@ end
 
 llabs labs(
 	// input : change indicating startworking, can't be stopped
-	.Clck(CLOCK_50),
+	.Clck(clock),
 	// input : the clock,
 	.board(board),
 	// input : the board status
@@ -64,7 +64,7 @@ llabs labs(
 	.pointer_loc_x(pointer_loc_x),
 	.pointer_loc_y(pointer_loc_y),
 	// inputs : the location of pointer, x, y coordinate
-	.Reset(SW[17]),
+	.Reset(reset),
 	// inputs : the reset
 	.VGA_CLK(VGA_CLK), // VGA_CLK;
 	.VGA_HS(VGA_HS), // VGA_H_SYNC
