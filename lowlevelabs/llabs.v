@@ -66,26 +66,26 @@ module llabs(
 	// output : The output indicating starting to write information to the memory
 	);
 
-	// vga_adapter VGA(
-	// 	.resetn(Reset),
-	// 	.clock(Clck),
-	// 	.colour(color_output),
-	// 	.x(x_co),
-	// 	.y(y_co),
-	// 	.plot(print_enable),
-	// 	/* Signals for the DC to drive the monitor. */
-	// 	.VGA_R(VGA_R),
-	// 	.VGA_G(VGA_G),
-	// 	.VGA_B(VGA_B),
-	// 	.VGA_HS(VGA_HS),
-	// 	.VGA_VS(VGA_VS),
-	// 	.VGA_BLANK(VGA_BLANK_N),
-	// 	.VGA_SYNC(VGA_SYNC_N),
-	// 	.VGA_CLK(VGA_CLK));
-	// defparam VGA.RESOLUTION = "160x120";
-	// defparam VGA.MONOCHROME = "FALSE";
-	// defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
-	// defparam VGA.BACKGROUND_IMAGE = "black.mif";
+	vga_adapter VGA(
+		.resetn(Reset),
+		.clock(Clck),
+		.colour(color_output),
+		.x(x_co),
+		.y(y_co),
+		.plot(print_enable),
+		/* Signals for the DC to drive the monitor. */
+		.VGA_R(VGA_R),
+		.VGA_G(VGA_G),
+		.VGA_B(VGA_B),
+		.VGA_HS(VGA_HS),
+		.VGA_VS(VGA_VS),
+		.VGA_BLANK(VGA_BLANK_N),
+		.VGA_SYNC(VGA_SYNC_N),
+		.VGA_CLK(VGA_CLK));
+	defparam VGA.RESOLUTION = "160x120";
+	defparam VGA.MONOCHROME = "FALSE";
+	defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+	defparam VGA.BACKGROUND_IMAGE = "black.mif";
 
 
 
