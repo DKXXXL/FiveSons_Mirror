@@ -674,7 +674,7 @@ module paint_pic(
 	  end
 	  PRINTINGPIC_LOAD:
 	  begin
-		color_output = board_pic[(112 * 112 - (pixel_x  + pixel_y * (pixel_x_end - pixel_x_start))) * `COLOR_SIZE +: `COLOR_SIZE];
+		color_output = board_pic[(112 * 112 - 1 - (pixel_x  + pixel_y * (pixel_x_end - pixel_x_start))) * `COLOR_SIZE +: `COLOR_SIZE];
 		pixel_x_co = pixel_x;
 		pixel_y_co = pixel_y;
 		print_enable = 1;
