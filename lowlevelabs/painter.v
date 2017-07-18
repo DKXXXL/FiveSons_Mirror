@@ -201,7 +201,7 @@ module painter(
 			pixel_y_start = `MAP_BOARDYCO_PIXELYCOSTART(pointer_loc_y);
 			pixel_y_end = `MAP_BOARDYCO_PIXELYCOEND(pointer_loc_y);
 			PAINTING_STAGE = PAINTING_CHESS_LOAD2;
-			color_input = 3'b100;
+			color_input = 3'b101;
 			counter = (pixel_x_end - pixel_x_start) * (pixel_y_end - pixel_y_start) * `ENSURE + 10;
 			PAINTING_CONFIG = `PAINTING_CONFIG_SQUARE;
 			paint_chess_start_working = 1;
