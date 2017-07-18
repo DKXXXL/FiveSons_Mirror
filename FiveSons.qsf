@@ -42,7 +42,7 @@ set_global_assignment -name DEVICE EP4CE115F29C7
 set_global_assignment -name TOP_LEVEL_ENTITY FiveSons
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.0.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:32:05  JULY 04, 2017"
-set_global_assignment -name LAST_QUARTUS_VERSION "17.0.0 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION 16.0.0
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -591,4 +591,7 @@ set_global_assignment -name VERILOG_FILE lowlevelabs/painter.v
 set_global_assignment -name VERILOG_FILE lowlevelabs/llabs.v
 set_global_assignment -name VERILOG_FILE lowlevelabs/header.v
 set_global_assignment -name VERILOG_FILE demo.v
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain1.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain2.cdf
+set_global_assignment -name CDF_FILE /courses/courses/cscb58s17/jinende/fivesons/output_files/Chain3.cdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

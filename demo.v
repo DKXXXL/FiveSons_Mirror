@@ -33,7 +33,7 @@ module FiveSons(
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
-    reg [511 : 0] board;
+    reg [511 : 0] board = 0;
 
 
 reg reset = 1;
@@ -47,7 +47,7 @@ always #PERIOD_clock clock <= !clock;
 
 initial
 begin
-  board = 0 - 1;
+  board = 0;
   gaming_status = 2'b00;
   pointer_loc_x = 4;
   pointer_loc_y = 6;
@@ -79,7 +79,7 @@ llabs labs(
 
 
 
-    always@(*)
+    always@(SW[16])
     begin
       if(SW[16] == 1)
       begin
