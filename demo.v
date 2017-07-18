@@ -37,7 +37,7 @@ module FiveSons(
 
 
 reg reset = 1;
-reg [1:0] gaming_status;
+reg [1:0] gaming_status = 2'b00;
 reg [3:0] pointer_loc_x, pointer_loc_y;
 
 
@@ -83,8 +83,21 @@ llabs labs(
     begin
       if(SW[16] == 1)
       begin
-        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01; 
+        board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b10; 
       end
+
+			pointer_loc_x = SW[3:0];
+			pointer_loc_y = SW[7:4];
+
+		
+		if(SW[14] == 1)
+      begin
+			board[`CO_TO_OFFSET(SW[3:0], SW[7:4]) +: 2] = 2'b01; 
+      end
+		if(SW[13] == 1)
+      begin
+			gaming_status = 2'b11;
+      end	
     end
 
 
