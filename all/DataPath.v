@@ -1,4 +1,14 @@
-module DataPath(coordi, resetn, put, turn_control, ledr, ledg, hex0, hex1, clock);
+module DataPath(coordi, resetn, put, turn_control, ledr, ledg, hex0, hex1, clock,
+              // The ports below are for the VGA output.  Do not change.
+	      vga_clk,      // VGA Clock
+	      vga_hs,       // VGA H_SYNC
+	      vga_vs,       // VGA V_SYNC
+	      vga_blank_n,  // VGA BLANK
+	      vga_sync_n,   // VGA SYNC
+	      vga_r,        // VGA Red[9:0]
+	      vga_g,	    //	VGA Green[9:0]
+	      vga_b         //	VGA Blue[9:0]
+);
     input [7:0] coordi; //x-y coordinate (row-column) standing for a point player want to put his chess
     input resetn; //reset
     input put; //put signal
@@ -6,6 +16,17 @@ module DataPath(coordi, resetn, put, turn_control, ledr, ledg, hex0, hex1, clock
     input clock; //clock
     output [6:0] hex0, hex1; //HEX0: x coordinate (row), HEX1: y coordinate (column)
     output reg [7:0] ledg, ledr; //LEDR[0]: player0's turn, LEDG[7]: player1's turn; LEDR[7]: player0 win, LEDG[0]: player1 win
+
+    // Declare your inputs and outputs here
+    // Do not change the following outputs
+    output vga_clk;   				// VGA Clock
+    output vga_hs;				// VGA H_SYNC
+    output vga_vs;				// VGA V_SYNC
+    output vga_blank_n;				// VGA BLANK
+    output vga_sync_n;				// VGA SYNC
+    output [9:0] vga_r;   			// VGA Red[9:0]
+    output [9:0] vga_g;	 			// VGA Green[9:0]
+    output [9:0] vga_b;   			// VGA Blue[9:0]
 
 
     // Display coordinate to HEX
@@ -73,6 +94,29 @@ module DataPath(coordi, resetn, put, turn_control, ledr, ledg, hex0, hex1, clock
             end
         end
     end
+
+    llabs labs(
+	.Clck(clock),
+	// input : the clock,
+	.board(memory),
+	// input : the board status
+	.gaming_status(color),
+	// input : the status of gaming
+	.pointer_loc_x(coordi[7:4]),
+	.pointer_loc_y(coordi[3:0]),
+	// inputs : the location of pointer, x, y coordinate
+	.Reset(resetn),
+	// inputs : the reset
+	.VGA_CLK(vga_clk), // VGA_CLK;
+	.VGA_HS(vga_hs), // VGA_H_SYNC
+	.VGA_VS(vga_vs), // VGA_V_SYNC
+	.VGA_BLANK_N(vga_blank_n), // VGA_BLANK
+	.VGA_SYNC_N(vga_sync_n), //VGA SYNC
+	.VGA_R(vga_r), // VGA Red[9:0]
+	.VGA_G(vga_g), // VGA Green[9:0]
+	.VGA_B(vga_b) // VGA Blue[9:0]
+	
+);
 
 endmodule
 
