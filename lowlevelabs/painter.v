@@ -262,7 +262,7 @@ module painter(
 		PAINTING_BOARD_LOAD2 :
 		begin
 			PAINTING_STAGE = PAINTING_BOARD_WAIT;
-			counter = `SCR_HEIGHT * `SCR_WIDTH * 5;
+			counter = `SCR_HEIGHT * `SCR_WIDTH * `ENSURE;
 		end
 		PAINTING_BOARD_WAIT :
 		begin

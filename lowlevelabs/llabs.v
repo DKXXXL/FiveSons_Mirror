@@ -44,7 +44,36 @@ module llabs(
 	wire [`SCR_HEIGHT_BITS - 1 : 0] y_co;
 	wire [`COLOR_SIZE - 1 : 0] color_output;
 	wire print_enable;
+	
+	reg button = 0;
+	reg [63:0] counter = -1;
+	localparam start = 2'b00,
+					waiting = 2'b01,
+					stop = 2'b10;
+	reg[2:0] status = stop;
+	`define WAITING_TIME (`SCR_HEIGHT * `SCR_WIDTH * `ENSURE * 5)
 
+	always@(board, pointer_loc_x, pointer_loc_y, gaming_status)
+	begin
+		if(status == stop)
+		begin
+			status = waiting;
+			counter = `WAITING_TIME;
+			button = 1;
+		end
+		else if(status == waiting)
+		begin
+			if(counter == 0)
+			begin
+				status = stop;
+				button = 0;
+			end
+			else
+				counter = counter - 1;
+		end
+		
+	end
+	
  painter pt(
 	.board(board),
 	// input : the huge number of wires indicating a board
@@ -53,7 +82,7 @@ module llabs(
 	.pointer_loc_x(pointer_loc_x),
 	.pointer_loc_y(pointer_loc_y),
 	// input : the information of pointer location
-	.Clck(Clck),
+	.Clck(Clck & button),
 	// input : the clock
 	.Reset(Reset),
     // input : indicating the reset
