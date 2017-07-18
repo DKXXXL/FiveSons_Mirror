@@ -79,7 +79,7 @@ llabs labs(
 
 
 
-    always@(SW[16])
+    always@(posedge CLOCK_50)
     begin
       if(SW[16] == 1)
       begin

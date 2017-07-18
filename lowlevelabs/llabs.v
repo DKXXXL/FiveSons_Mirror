@@ -42,7 +42,7 @@ module llabs(
 
 	wire [`SCR_WIDTH_BITS - 1 : 0] x_co;
 	wire [`SCR_HEIGHT_BITS - 1 : 0] y_co;
-	wire color_output;
+	wire [`COLOR_SIZE - 1 : 0] color_output;
 	wire print_enable;
 
  painter pt(
