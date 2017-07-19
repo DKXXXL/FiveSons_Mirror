@@ -37,7 +37,7 @@ module painter(
 	output [`SCR_HEIGHT_BITS - 1 : 0] paint_y_co_all_dimension;
 
 	
-	reg [`COLOR_SIZE - 1 : 0] color_input, color_repaint_chess;
+	reg [`COLOR_SIZE - 1 : 0] color_input;
 	wire [`COLOR_SIZE - 1 : 0] color, color_board, color_vic, color_vic_chess;
 
 
