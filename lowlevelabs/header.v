@@ -67,3 +67,4 @@
 
 `define ENSURE 10
 
+`define EACH_CYCLE_WAITING 32'd100000000

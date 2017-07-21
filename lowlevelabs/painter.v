@@ -89,6 +89,7 @@ module painter(
 				PAINTING_VICTORY_CHESS_LOAD2 = 5'd17,
 				PAINTING_VICTORY_CHESSS_WAIT = 5'd18,
 				PAINTING_DEAD = 5'd19,
+				PAINTING_UPPER_WAITING = 5'd20,
 				NOTHING_PAINTED = 3'd0,
 				CHESSES_PAINTED = 3'd1,
 				CHESSES_NOT_PAINTED_YET = 3'd2,
@@ -356,13 +357,22 @@ module painter(
 		PAINTING_UPPER:
 		begin
 		  if(winning_information == `WINNING_GAMING)
-		  	PAINTING_STAGE = PAINTING_BOARD;
+		  begin
+		  	counter = `EACH_CYCLE_WAITING;
+		  	PAINTING_STAGE = PAINTING_UPPER_WAITING;
+		  end
 		  else
 		  begin
 			PAINTING_STAGE = PAINTING_VICTORY;
 		  end
 		end
-
+		PAINTING_UPPER_WAITING:
+		begin
+		  if(counter == 0)
+		  	PAINTING_STAGE = PAINTING_BOARD;
+		  else
+		  	counter = counter - 1;
+		end
 		PAINTING_VICTORY:
 		begin
 		  paint_vic_start_working = 1;
