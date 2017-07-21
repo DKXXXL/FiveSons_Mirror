@@ -7,7 +7,7 @@ For CSCB58S17, Final Project.
 
 Project Description: 
 
-  A trivial attempt to implement gobang on DE2 board by Verilog. Two players, VGA with 3 bit coloring, 16*16 size of board.
+  A trivial attempt to implement gobang on Altera DE2-115 board by Verilog. Two players, VGA with 3 bit coloring, 16*16 size of board.
   
 # Credit #
 
