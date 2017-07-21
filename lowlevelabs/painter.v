@@ -227,7 +227,7 @@ module painter(
 	// input : indicating start working, continue for one clock cycle is ok
 	.configure(`PAINTING_CONFIG_CIRCLE),
 	// input : the configurance
-	.color(color_input), 
+	.color(winning_information), 
 	// input : the input preference color 
 	.color_output(color_vic_chess),
 	// output : the real output color

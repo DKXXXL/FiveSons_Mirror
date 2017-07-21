@@ -96,8 +96,19 @@ llabs labs(
       end
 		if(SW[13] == 1)
       begin
-			gaming_status = 2'b11;
+			gaming_status = 2'b01;
       end	
+		if(SW[12] == 1)
+		begin
+			gaming_status = 2'b10;
+		end
+		if(SW[17] == 0)
+		begin
+			gaming_status = 2'b00;
+			board = 0;
+			
+		
+		end
     end
 
 
