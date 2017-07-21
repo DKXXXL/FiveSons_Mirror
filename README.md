@@ -17,7 +17,10 @@ Gobang Logic Part:
 
 VGA, Display Part:
 
-  Ende Jin (Demo Release on branch attempt1-3)
+  Ende Jin 
+  
+  (Demo Release on branch attempt1-3)
+  
   (Credit to the VGA module provided by U of T)
 	
 
