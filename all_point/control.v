@@ -1,12 +1,23 @@
-module control(clock, resetn, put, change_turn, control_set);
-    input clock, resetn, put;
-    output reg change_turn, control_set;
+/**
+ * This module is the control module which control the transition between states in the FSM for
+ * GoBang and the control signals which controls the datapath.
+ */
+module control(clock, resetn, put, change_turn, change_able_read, control_set);
+    input clock; // the clock (50MHZ)
+    input resetn; // the reset signal for whole game
+    input put; // the signal which stands for put a chess
+    output reg change_turn; // the signal for change player
+    // the signal for get the information about whether is allowed to change the player
+    output reg change_able_read; 
+    // the signal for reset the pointer position
+    output reg control_set;
 
-    localparam  INITIAL     = 3'd0,
-                CHOICE      = 3'd1,
-                PUT_WAIT    = 3'd2,
-                CHECK       = 3'd3,
-                CHANGE      = 3'd4;
+    //States
+    localparam  INITIAL     = 3'd0, // initial states
+                CHOICE      = 3'd1, // states for user given coordinates
+                PUT_WAIT    = 3'd2, // states for (wait to) put a chess
+                CHECK       = 3'd3, // states for check the game status after put a chess
+                CHANGE      = 3'd4; // states to change player
 
 
     reg [2:0] current_state, next_state; 
@@ -33,12 +44,26 @@ module control(clock, resetn, put, change_turn, control_set);
     always @(*)
     begin: enable_signals
         case (current_state)
+            CHOICE: begin
+                // In CHOICE state, we want to be able record whether the next put is legal,
+                // so that we can determine whether need to change the player
+                // we also want to be able to change the position of the pointer
+                change_turn = 1'b0;
+                change_able_read = 1'b1;
+                control_set = 1'b0;
+            end
             CHANGE: begin
+                // In CHANGE state, we want to be able change player, according to the
+                // information got in CHOICE state.
+                // we also want to reset the position of the pointer
                 change_turn = 1'b1;
+                change_able_read = 1'b0;
                 control_set = 1'b1;
             end
             default: begin
+                // Otherwise, we keep two control signals low to maintain their functionality
                 change_turn = 1'b0;
+                change_able_read = 1'b0;
                 control_set = 1'b0;
             end
         endcase

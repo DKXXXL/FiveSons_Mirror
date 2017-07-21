@@ -1,4 +1,4 @@
-module DataPath(control_set, resetn, put, turn_control, ledr, ledg, hex0, hex1, clock, right, down,
+module DataPath(resetn, put, right, down, turn_control, change_able_read, control_set, ledr, ledg, hex0, hex1, clock,
               // The ports below are for the VGA output.  Do not change.
 	      vga_clk,      // VGA Clock
 	      vga_hs,       // VGA H_SYNC
@@ -11,12 +11,15 @@ module DataPath(control_set, resetn, put, turn_control, ledr, ledg, hex0, hex1, 
 );
     input resetn; //reset
     input put, right, down; //put, move right, move down signal
-    input turn_control, control_set; //switch player triger
+    input turn_control; // triger for change player
+    input change_able_read;  // signal which allows to record whether can change player after this put
+    input control_set; // the signal for reset the pointer position
     input clock; //clock
     output [6:0] hex0, hex1; //HEX0: x coordinate (row), HEX1: y coordinate (column)
-    output reg [7:0] ledg, ledr; //LEDR[0]: player0's turn, LEDG[7]: player1's turn; LEDR[7]: player0 win, LEDG[0]: player1 win
+    //LEDR[0]: player0's turn, LEDG[7]: player1's turn; LEDR[7]: player0 win, LEDG[0]: player1 win
+    output [7:0] ledg, ledr; 
 
-    // Declare your inputs and outputs here
+    // VGA required information
     // Do not change the following outputs
     output vga_clk;   				// VGA Clock
     output vga_hs;				// VGA H_SYNC
@@ -35,9 +38,6 @@ module DataPath(control_set, resetn, put, turn_control, ledr, ledg, hex0, hex1, 
     Hexdisplay row_display(.out(hex1), .in(coordi[7:4]));
     Hexdisplay col_display(.out(hex0), .in(coordi[3:0]));
 
-    // Get current chess color
-    wire [1:0] color; 
-    Color(.enable(turn_control), .resetn(resetn), .out(color));
     
     // memory and write_enable
     wire [511:0] memory;
@@ -49,6 +49,20 @@ module DataPath(control_set, resetn, put, turn_control, ledr, ledg, hex0, hex1, 
     Enable_control able(.current_state(current_state[1:0]), .out(write_enable));
     //given write_enable signal and current chess color, try to put a chess to that point
     Memory_Write dataIn(.in(color[1:0]), .select(coordi[7:0]), .out(memory[511:0]), .clock(put), .reset(resetn), .write_enable(write_enable));
+
+    // Get current chess color
+    wire [1:0] color;
+    wire change_enable; // records the write_eable signal before put
+    reg record;
+
+    always@(*)
+    begin
+       // in CHOICE state, we want to record the write_enable signal
+       if(change_able_read) record <= write_enable;
+    end
+    assign change_enable = record;
+    // only when this put is valid (write_enable is high before put), we can change player
+    Color getcolor(.turn(turn_control), .resetn(resetn), .out(color), .change_enable(change_enable));
 
     //Check status of the whole board
     wire [1:0] check_ans;
@@ -62,37 +76,38 @@ module DataPath(control_set, resetn, put, turn_control, ledr, ledg, hex0, hex1, 
         else dis_choice = 1'b0;
     end
 
+    reg [7:0] lg, lr;
     //Control light according to the display pattern signal
     always@(*)
     begin
         // If someone win, turn on the cooresponding "win" light 
         if(dis_choice) begin
             if(check_ans[1:0] == 2'b01) begin //player0 win
-                ledr[7] = 1'b1;
-                ledr[0] = 1'b0;
-                ledg[0] = 1'b0;
-                ledg[7] = 1'b0;
+                lr[7] = 1'b1;
+                lr[0] = 1'b0;
+                lg[0] = 1'b0;
+                lg[7] = 1'b0;
             end
             else begin  //player1 win
-                ledr[7] = 1'b0;
-                ledr[0] = 1'b0;
-                ledg[0] = 1'b1;
-                ledg[7] = 1'b0;
+                lr[7] = 1'b0;
+                lr[0] = 1'b0;
+                lg[0] = 1'b1;
+                lg[7] = 1'b0;
             end
         end
         // Else (in process), turn on the cooresponding "turn" light 
         else begin
             if(color[1:0] == 2'b01) begin //player0' turn
-                ledr[7] = 1'b0;
-                ledr[0] = 1'b1;
-                ledg[0] = 1'b0;
-                ledg[7] = 1'b0;
+                lr[7] = 1'b0;
+                lr[0] = 1'b1;
+                lg[0] = 1'b0;
+                lg[7] = 1'b0;
             end
             else begin  //player1's turn
-                ledr[7] = 1'b0;
-                ledr[0] = 1'b0;
-                ledg[0] = 1'b0;
-                ledg[7] = 1'b1;
+                lr[7] = 1'b0;
+                lr[0] = 1'b0;
+                lg[0] = 1'b0;
+                lg[7] = 1'b1;
             end
         end
     end
@@ -119,6 +134,15 @@ module DataPath(control_set, resetn, put, turn_control, ledr, ledg, hex0, hex1, 
 	.VGA_B(vga_b) // VGA Blue[9:0]
 	
 );
+
+    assign ledr[7] = lr[7];
+    assign ledr[0] = lr[0];
+    assign ledg[7] = lg[7];
+    assign ledg[0] = lg[0];
+    // lights used for test
+    assign ledr[5] = write_enable;
+    assign ledr[4] = change_enable;
+    assign ledr[3] = control_set;
 
 endmodule
 
