@@ -29,15 +29,18 @@ module GoBang(KEY, LEDR, LEDG, HEX0, HEX1, CLOCK_50,
     output [9:0] VGA_B;   			// VGA Blue[9:0]
 
 
-    wire turn_control; // enable signal for player switch
+    wire turn_control; // switch for player change
     wire control_set; // pointer control signal
+    wire change_able_read; // enable signal for player switch
     //Control
-    control ct(.clock(CLOCK_50), .resetn(KEY[1]), .put(KEY[0]), .change_turn(turn_control), .control_set(control_set));
+    control ct(.clock(CLOCK_50), .resetn(KEY[1]), .put(KEY[0]),
+               .change_turn(turn_control), .change_able_read(change_able_read), .control_set(control_set));
 
     //Datapath
-    DataPath board(.control_set(control_set), .resetn(KEY[1]), .put(KEY[0]),
-	           .turn_control(turn_control), .ledr(LEDR[7:0]), .ledg(LEDG[7:0]),
-		   .hex0(HEX0[6:0]), .hex1(HEX1[6:0]), .clock(CLOCK_50), .right(KEY[2]), .down(KEY[3]),
+    DataPath board(.resetn(KEY[1]), .put(KEY[0]), .right(KEY[2]), .down(KEY[3]),
+                   .turn_control(turn_control), .change_able_read(change_able_read), .control_set(control_set),
+                   .ledr(LEDR[7:0]), .ledg(LEDG[7:0]),
+                   .hex0(HEX0[6:0]), .hex1(HEX1[6:0]), .clock(CLOCK_50),
                    .vga_clk(VGA_CLK),         // VGA Clock
 	           .vga_hs(VGA_HS),           // VGA H_SYNC
 	           .vga_vs(VGA_VS),           // VGA V_SYNC
