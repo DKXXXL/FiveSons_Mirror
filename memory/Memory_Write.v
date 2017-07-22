@@ -3,14 +3,14 @@
  * signal (the xy coordinate of a point). According to the given xy coordinate, store the given
  * information into the corresponding PointInfor block.
  */
-module Memory_Write(in, select, out, clock, reset);
+module Memory_Write(in, select, out, clock, reset, write_enable);
     // input data stands for the new information of a point on game board
     input [1:0] in;
     // 8-bit select signal, the highest 4 bits are for x coordinate, the lowest 4 bits are for
     // y coordinate
     input [7:0] select;
-    // clock and reset signal
-    input clock, reset; 
+    // clock,reset and write enable signal
+    input clock, reset, write_enable; 
     //256 2-bit different output line for every PointInfor block for each points on the game board
     output [511:0] out;
     wire [511:0] data_out;
@@ -21,8 +21,8 @@ module Memory_Write(in, select, out, clock, reset);
 
     //According to te row select signal, put the input data to the right input line for each row
     Select1to16 transDataToRow(.in(in[1:0]), .select(select[7:4]), .out(row_in[31:0]));
-
-    Enable_select enableEachRow(.enable(1'b1), .select(select[7:4]), .out(enable[15:0]));
+    //Trans the write enable signal
+    Enable_select enableEachRow(.enable(write_enable), .select(select[7:4]), .out(enable[15:0]));
  
     // According to the given y-coordinate, store the given information into the corresponding
     // PointInfor block for each row.

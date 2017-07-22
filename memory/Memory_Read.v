@@ -3,14 +3,12 @@
  * select signal (the xy coordinate of a point). According to the given xy coordinate, output
  * the corresponding information of that point.
  */
-module Memory_Read(in, select, out, clock, reset);
+module Memory_Read(in, select, out);
     // output data
     output [1:0] out; 
     // 8-bit select signal, the highest 4 bits are for x coordinate, the lowest 4 bits are for
     // y coordinate
     input [7:0] select;
-    // clock and reset signal
-    input clock, reset; 
     //256 2-bit different input line for every point on the board
     input [511:0] in;
     //16 2-bit different output line for 16 different rows on the board
