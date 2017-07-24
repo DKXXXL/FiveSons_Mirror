@@ -1,4 +1,4 @@
-module Fivesons(KEY,
+module try(KEY,
  CLOCK_50, 
  SW, //LEDR,
 

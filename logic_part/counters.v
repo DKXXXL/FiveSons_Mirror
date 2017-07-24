@@ -44,11 +44,9 @@ module horizontal_check(reset, active, pointer, chess, address, currstate, succe
             end
         COUNT_WAIT: nxt_state = COUNT;
 		SUCCESS: begin
-			suc = 1'd1;
 			nxt_state = SUCCESS;
 			end
 		FAIL: begin
-			actnex = 1'b1;
 			nxt_state = FAIL;
 			end
 		default: nxt_state = WAIT;
@@ -156,11 +154,9 @@ module verticle_check(reset, active, pointer, chess, address, currstate, success
             end
         COUNT_WAIT: nxt_state = COUNT;
 		SUCCESS: begin
-			suc = 1'd1;
 			nxt_state = SUCCESS;
 			end
 		FAIL: begin
-			actnex = 1'b1;
 			nxt_state = FAIL;
 			end
 		default: nxt_state = WAIT;
@@ -268,11 +264,9 @@ module lean1_check(reset, active, pointer, chess, address, currstate, success, a
             end
         COUNT_WAIT: nxt_state = COUNT;
 		SUCCESS: begin
-			suc = 1'd1;
 			nxt_state = SUCCESS;
 			end
 		FAIL: begin
-			actnex = 1'b1;
 			nxt_state = FAIL;
 			end
 		default: nxt_state = WAIT;
@@ -414,11 +408,9 @@ module lean2_check(reset, active, pointer, chess, address, currstate, success, a
             end
         COUNT_WAIT: nxt_state = COUNT;
 		SUCCESS: begin
-			suc = 1'd1;
 			nxt_state = SUCCESS;
 			end
 		FAIL: begin
-			actnex = 1'b1;
 			nxt_state = FAIL;
 			end
 		default: nxt_state = WAIT;
