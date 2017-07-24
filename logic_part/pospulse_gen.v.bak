@@ -1,0 +1,20 @@
+module posedge_gen(in, pulse, clk);
+    input in;
+    input clk;
+    output pulse;
+    reg pul;
+    reg nxt_state;
+    localparam PULSE = 1'b1, REST = 1'b0;
+    assign pulse = pul;
+    initial begin
+        pul = REST;
+        nxt_state = REST;
+    end
+    always @(in) begin
+        nxt_state = PULSE;
+    end
+    always @(clk) begin
+        pul = nxt_state;
+        nxt_state = REST;
+    end
+endmodule

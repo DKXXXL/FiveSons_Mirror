@@ -1,0 +1,71 @@
+diff a/logic_part/Main.v b/logic_part/Main.v	(rejected hunks)
+@@ -16,29 +16,54 @@
+     end
+ endmodule
+ 
+-module Main(KEY, CLOCK_50, state);
++module Main(KEY, CLOCK_50, SW);
+     input KEY[3:0];
+     input CLOCK_50;
+-    output state[1:0]
+-    wire reset_pulse;
+-    wire active_pulse;
++    input SW[17:0];
++
++    wire write_add[7:0];
++    wire read_add[7:0];
++    wire inmem[1:0];
++    wire outmem[1:0];
++    wire mem[511:0];
++    wire check_active_pulse;
++    wire pointer_reset_pulse;
+     wire pointer;
+-    reg active_pulse_gen;
+-    reg reset_pulse_gen;
+-    reg active_checker;
++    wire round_end_pulse;
++    wire vic;
++    wire continue;
++    reg checker_active;
++    reg pointer_reset;
+     reg currplayer[1:0];
+     reg currstate[1:0];
++    reg FSM[3:0];
++    reg nxt_FSM[3:0];
+     assign state = currstate;
+ 
++    localparam WAIT_SELET = 4'd0;
++    localparam PLAY = 4'd1;
++    localparam WAIT_CHECK = 4'd2;
++    localparam END_ROUND = 4'd3;
++
+     initial begin
+         currstate = 2'd0;
+-        currplayer = 1'b0;
+-        active_checker = 1'b0;
+-        pulse_gen = 1'b0;
++        currplayer = 2'b01;
++        checker_active = 1'b0;
++        pointer_reset = 1'b0;
++        FSM = WAIT_SELET;
++        nxt_FSM = WAIT_SELET;
+     end
+ 
+-    posedge_gen gen(reset_pulse_gen, reset_pulse, CLOCK_50);
+-    posedge_gen gen2(active_pulse_gen, active_pulse, CLOCK_50);
+-    pointer pit(KEY[3], KEY[2], pos_pulse, pointer);
+-    overall_check allck(reset_pulse, active_checker, pointer, )
+-    
++    posedge_gen gen(currplayer, round_end_pulse, CLOCK_50);
++    Memory_Read read(mem, read_add, outmem, CLOCK_50, SW[17]),
++    Memory_Write write(inmem, write_add)
++
++    pointer pit(KEY[3], KEY[2], round_end_pulse, pointer);
++    overall_check allck(SW[17], KEY[1], pointer, currplayer, vic, continue, CLOCK_50);
++    always @(*) begin
++        case(FSM) begin
++            WAIT_SELET: if (KEY[1] == 1'b1) nxt_FSM = PLAY;
++                        else nxt_FSM = WAIT_SELET;
++            PLAY: if 
++
++

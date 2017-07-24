@@ -1,0 +1,121 @@
+module horizontal_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
+module overall_check(reset, active, pointer, chess, success, fail, clk);
+
+module Main(KEY, CLOCK_50, SW);
+    input [3:0] KEY;
+    input CLOCK_50;
+    input [17:0] SW;
+
+    wire [7:0] pointer;
+    wire pointer_reset_pulse, play_pulse, check_activate_pulse;
+    wire [511:0] board;
+    wire [7:0] add;
+    wire [1:0] content_write, board_chess;
+    wire round_suc, round_fai;
+
+    reg pointer_reset, play, check_activate;
+    reg [1:0] curr_player;
+    reg [7:0] prev_add;
+    reg [1:0] blank;
+    reg [1:0] game_state;
+    reg [3:0] curr_state, nxt_state;
+
+    pospulse_gen p1(pointer_reset, pointer_reset_pulse, CLOCK_50);
+    pospulse_gen p2(play, play_pulse, CLOCK_50);
+    pospulse_gen p3(check_activate, check_activate_pulse, CLOCK_50);
+
+    pointer pt(KEY[3], KEY[2], pointer_reset_pulse, pointer);
+    Memory_Write mem(.in(content_write), .select(add), .out(board), .clock(play_pulse), .reset(SW[17]));
+    Memory_Read mr(.in(board), .select(pointer), .out(board_chess));
+    mux2218 mx1(pointer, prev_add, KEY[0], add);
+    mux2212 mx2(curr_player, blank, KEY[0], content_write);
+    overall_check oc(.reset(SW[17]), .active(check_activate_pulse),
+        .pointer(pointer), .chess(curr_player), .success(round_suc), .fail(round_fai), .board(board), .clk(CLOCK_50));
+
+    localparam WAIT_SELECT = 4'd0,
+            BEGIN_REGRET = 4'd1,
+            END_REGRET = 4'd2,
+            BEGIN_PLAY = 4'd3,
+            PLAY = 4'd4,
+            BEGIN_CHECK = 4'd5,
+            END_CHECK = 4'd6,
+            END_ROUND = 4'd7,
+            WIN = 4'd8;
+            BLACK = 2'b01;
+            WHITE = 2'b10;
+
+    initial begin
+        check_activate = 1'b0;
+        pointer_reset = 1'b0;
+        play = 1'b0;
+        curr_player = BLACK;
+        prev_add = 8'd0;
+        blank = 2'd0;
+        game_state = 2'd0;
+        curr_state = WAIT_SELECT;
+        nxt_state = WAIT_SELECT;
+    end
+
+    
+    always @(*) begin
+        case(curr_state)
+            WAIT_SELECT: begin
+                if (KEY[1] == 1'b0) nxt_state = BEGIN_PLAY;
+                else if (KEY[0] == 1'b0) nxt_state = BEGIN_REGRET;
+                else nxt_state = WAIT_SELECT;
+                end
+            
+            BEGIN_REGRET: begin
+                play = !play;
+                pointer_reset = !pointer_reset;
+                nxt_state = END_REGRET;
+                end
+
+            END_REGRET: begin
+                if (KEY[0] == 1'b1) nxt_state = WAIT_SELECT;
+                else nxt_state = END_REGRET;
+                end
+            
+            BEGIN_PLAY: begin
+                if (KEY[1] == 1'b0) nxt_state = BEGIN_PLAY;
+                else nxt_state = PLAY;
+                end
+            
+            PLAY: begin
+                if (board_chess != 2'd0) nxt_state = WAIT_SELECT;
+                else begin
+                    play = !play;
+                    nxt_state = BEGIN_CHECK;
+                    end
+                end
+            
+            BEGIN_CHECK: begin
+                check_activate = !check_activate;
+                nxt_state = END_CHECK;
+                end
+
+            END_CHECK: begin
+                if (round_suc == 1'b1) nxt_state = WIN;
+                else if (round_fai == 1'b1) nxt_state = END_ROUND;
+                else nxt_state = END_CHECK;
+                end
+            
+            END_ROUND: begin
+                pointer_reset = !pointer_reset;
+                curr_player = !curr_player;
+                nxt_state = WAIT_SELECT;
+                end
+            
+            WIN: begin
+                game_state = curr_player;
+                end
+            
+            default: nxt_state = WAIT_SELECT;
+        endcase
+    end
+
+    always @(posedge CLOCK_50, negedge SW[17]) begin
+        if (SW[17] == 1'b0) curr_state = WAIT_SELECT;
+        else curr_state = nxt_state;
+    end
+endmodule
