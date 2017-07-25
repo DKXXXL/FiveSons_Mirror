@@ -16,7 +16,8 @@ module GoBang(SW, KEY, LEDR, LEDG, HEX0, HEX1, CLOCK_50,
     input [3:0] KEY; //0: put; 1: reset; 2: move right; 3:move down
     input CLOCK_50; //clock
     output [6:0] HEX0, HEX1; //HEX0: x coordinate (row), HEX1: y coordinate (column)
-    output [7:0] LEDR, LEDG; //LEDR[0]: player0's turn, LEDG[7]: player1's turn; LEDR[7]: player0 win, LEDG[0]: player1 win
+    output [7:0] LEDG; //LEDR[0]: player0's turn, LEDG[7]: player1's turn; LEDR[7]: player0 win, LEDG[0]: player1 win
+    output [17:0] LEDR;
 
     // VGA required information
     // Do not change the following outputs

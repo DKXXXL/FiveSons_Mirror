@@ -143,8 +143,8 @@ module DataPath(coordi, resetn, put, turn_control, change_able_read, ledr, ledg,
     assign ledg[0] = lg[0];
     // lights used for test
     assign ledr[5] = write_enable;
-    assign ledr[4] = change_able_read;
-    assign ledr[3] = change_enable;
+    //assign ledr[4] = change_able_read;
+    //assign ledr[3] = change_enable;
 
 endmodule
 
