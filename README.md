@@ -13,7 +13,7 @@ Project Description:
 
 Gobang Logic Part:
 
-  Zhili Pan, Shuhao Li
+  Zhili Pan
 
 VGA, Display Part:
 
