@@ -17,19 +17,18 @@ module Fivesons(KEY,
     input [17:0] SW;
 
     wire [7:0] pointer;
-    wire pointer_reset_pulse, play_pulse, check_activate_pulse, check_reset_pulse;
+    wire play_pulse, check_activate_pulse, check_reset_pulse;
     wire [511:0] board;
     wire [7:0] add;
     wire [1:0] content_write, board_chess;
     wire round_suc, round_fai;
 
-    reg pointer_reset, play, check_activate, check_reset;
+    reg play, check_activate, check_reset;
     reg [1:0] curr_player;
     reg [7:0] prev_add;
     reg [1:0] game_state;
     reg [3:0] curr_state, nxt_state;
     
-    reg[7:0] pointr;
 
 	 
 	output			VGA_CLK;   				//	VGA Clock
@@ -58,7 +57,7 @@ module Fivesons(KEY,
 	// inputs : the reset
 	.VGA_CLK(VGA_CLK), // VGA_CLK;
 	.VGA_HS(VGA_HS), // VGA_H_SYNC
-	.VGA_VS(VGA_VS), // VGA_V_SYNC
+	.VGA_VS(VGA_VS), // VGA_V_SYNCpointer_reset
 	.VGA_BLANK_N(VGA_BLANK_N), // VGA_BLANK
 	.VGA_SYNC_N(VGA_SYNC_N), //VGA SYNC
 	.VGA_R(VGA_R), // VGA Red[9:0]
@@ -66,18 +65,18 @@ module Fivesons(KEY,
 	.VGA_B(VGA_B) // VGA Blue[9:0]
 );
 
-    pospulse_gen p1(pointer_reset, pointer_reset_pulse, CLOCK_50);
+
     pospulse_gen p2(play, play_pulse, CLOCK_50);
     pospulse_gen p3(check_activate, check_activate_pulse, CLOCK_50);
     pospulse_gen p4(check_reset, check_reset_pulse, CLOCK_50);
     
-    mux2218 mx1(pointer, prev_add, KEY[0], add);
-    mux2212 mx2(curr_player, 2'b00, KEY[0], content_write);
+    mux2218 mx1(pointer, prev_add, SW[0], add);
+    mux2212 mx2(curr_player, 2'b00, SW[0], content_write);
     
     Memory_Write mem(.in(content_write), .select(add), .out(board), .clock(play_pulse), .reset(SW[17]));
     Memory_Read mr(.in(board), .select(pointer), .out(board_chess));
     
-    pointer pt(KEY[3], KEY[2], pointer_reset_pulse, pointer);
+    pointer pt(SW[3], SW[2], 1'b0, pointer);
 
     overall_check oc(.reset(check_reset_pulse), .active(check_activate_pulse),
         .pointer(pointer), .chess(curr_player), .success(round_suc), .fail(round_fai), .board(board), .clk(CLOCK_50));
@@ -96,7 +95,6 @@ module Fivesons(KEY,
 
     initial begin
         check_activate = 1'b0;
-        pointer_reset = 1'b0;
         play = 1'b0;
         check_reset = 1'b0;
         curr_player = BLACK;
@@ -104,20 +102,19 @@ module Fivesons(KEY,
         game_state = 2'd0;
         curr_state = WAIT_SELECT;
         nxt_state = WAIT_SELECT;
-        pointr = 8'd0;
     end
 
     
     always @(*) begin
         case(curr_state)
             WAIT_SELECT: begin
-                if (KEY[1] == 1'b0) nxt_state = BEGIN_PLAY;
-                else if (KEY[0] == 1'b0) nxt_state = BEGIN_REGRET;
+                if (SW[1] == 1'b0) nxt_state = BEGIN_PLAY;
+                else if (SW[0] == 1'b0) nxt_state = BEGIN_REGRET;
                 else nxt_state = WAIT_SELECT;
                 end
             
             BEGIN_REGRET: begin
-                if (KEY[0] == 1'b1) nxt_state = WAIT_SELECT;
+                if (SW[0] == 1'b1) nxt_state = WAIT_SELECT;
                 else nxt_state = BEGIN_REGRET;
                 end
 
@@ -167,7 +164,6 @@ module Fivesons(KEY,
             WIN: game_state = curr_player;
             
             END_ROUND : begin
-                pointer_reset = !pointer_reset;
                 check_reset = !check_reset;
                 if (curr_player == BLACK) curr_player = WHITE;
                 else curr_player = BLACK;

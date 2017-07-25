@@ -144,19 +144,19 @@
 					"strict" : false
 				},
 				{
-					"name" : "KEY[2]",
+					"name" : "SW[2]",
 					"strict" : false
 				},
 				{
-					"name" : "KEY[0]",
+					"name" : "SW[0]",
 					"strict" : false
 				},
 				{
-					"name" : "KEY[3]",
+					"name" : "SW[3]",
 					"strict" : false
 				},
 				{
-					"name" : "KEY[1]",
+					"name" : "SW[1]",
 					"strict" : false
 				}
 			]

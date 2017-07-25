@@ -1,9 +1,9 @@
-module horizontal_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
+module horizontal_check(reset, active, pointer, chess, success, active_next, clk, board);
   input active, reset;
   input [7:0] pointer;
-  input [1:0] chess, currstate;
+  input [1:0] chess;
   input clk;
-  output [7:0] address;
+  input [511:0] board;
   output active_next, success;
   
   reg [3:0] curr_state, nxt_state;
@@ -11,11 +11,12 @@ module horizontal_check(reset, active, pointer, chess, address, currstate, succe
   reg [2:0] count;
   reg [1:0] curstate, ches;
   reg actnex, suc;
-
+  wire [7:0]address;
+  wire currstate;
+  Memory_Read mr1(.in(board), .select(address), .out(currstate));
   assign active_next = actnex;
   assign success = suc;
   assign address = curradd;
-  
   localparam WAIT = 4'd0,
 			    INITIAL = 4'd1,
 				 COUNT = 4'd2,
@@ -108,12 +109,12 @@ module horizontal_check(reset, active, pointer, chess, address, currstate, succe
   end
 endmodule
 
-module verticle_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
+module verticle_check(reset, active, pointer, chess, success, active_next, clk, board);
   input active, reset;
   input [7:0] pointer;
-  input [1:0] chess, currstate;
+  input [1:0] chess;
   input clk;
-  output [7:0] address;
+  input [511:0] board;
   output active_next, success;
   
   reg [3:0] curr_state, nxt_state;
@@ -121,6 +122,10 @@ module verticle_check(reset, active, pointer, chess, address, currstate, success
   reg [2:0] count;
   reg [1:0] curstate, ches;
   reg actnex, suc;
+  
+  wire [7:0]address;
+  wire currstate;
+  Memory_Read mr1(.in(board), .select(address), .out(currstate));
 
   assign active_next = actnex;
   assign success = suc;
@@ -218,19 +223,22 @@ module verticle_check(reset, active, pointer, chess, address, currstate, success
   end
 endmodule
 
-module lean1_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
+module lean1_check(reset, active, pointer, chess, success, active_next, clk, board);
   input active, reset;
   input [7:0] pointer;
-  input [1:0] chess, currstate;
+  input [1:0] chess;
   input clk;
-  output [7:0] address;
-  output active_next, success;
+  input [511:0]board;
+  output active_next, success;;
   
   reg [3:0] curr_state, nxt_state;
   reg [7:0] curradd, endadd;
   reg [2:0] count;
   reg [1:0] curstate, ches;
   reg actnex, suc;
+  wire [7:0]address;
+  wire currstate;
+  Memory_Read mr1(.in(board), .select(address), .out(currstate));
 
   assign active_next = actnex;
   assign success = suc;
@@ -291,7 +299,7 @@ module lean1_check(reset, active, pointer, chess, address, currstate, success, a
 			  endadd = {pointer[7:4] + 4'd4, pointer[3:0] + 4'd4};
 			end
 						
-			else if ((pointer[3:0] >= 4'd12) && (pointer[7:4] > 4'd3) && (pointer[7:4] < 4'd12)) begin // right
+			else if ((pointer[3:0] > 4'd11) && (pointer[7:4] > 4'd3) && (pointer[7:4] < 4'd12)) begin // right
 		      curradd = {pointer[7:4] - 4'd4 , pointer[3:0] - 4'd4};
 			  endadd = {pointer[7:4] + (4'd15 - pointer[3:0]), 4'd15};
 			end
@@ -306,24 +314,25 @@ module lean1_check(reset, active, pointer, chess, address, currstate, success, a
 			  endadd = {4'd15, pointer[3:0] + (4'd15 - pointer[7:4])};
 			end
 						
-			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] <= 4'd3)) begin // left up
+			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] < 4'd4)) begin // left up
 			  endadd = {pointer[7:4] + 4'd4, pointer[3:0] + 4'd4};
 			  if (pointer[7:4] < pointer[3:0]) curradd = {4'd0, pointer[3:0] - pointer[7:4]};
 			  else curradd = {pointer[7:4] - pointer[3:0], 4'd0};
 			end
 			
-			else if ((pointer[3:0] >= 4'd12) && (pointer[7:4] >= 4'd12)) begin // right down
+			else if ((pointer[3:0] > 4'd11) && (pointer[7:4] > 4'd11)) begin // right down
 			  curradd = {pointer[7:4] - 4'd4 , pointer[3:0] - 4'd4};
 			  if (pointer[7:4] > pointer[3:0]) endadd = {4'd15, pointer[3:0] + (4'd15 - pointer[7:4])};
 			  else endadd = {pointer[7:4] + (4'd15 - pointer[3:0]), 4'd15};
 			end
 			
-			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] >= 4'd12)) begin // left down
-			  curradd = {pointer[7:4] - pointer[3:0] , 4'd0};
+			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] > 4'd11)) begin // left down
+			  curradd = {pointer[7:4] - pointer[3:0] module lean2_check(reset, active, pointer, chess, success, active_next, clk, board);
+, 4'd0};
 			  endadd = {4'd15, pointer[3:0] + (4'd15 - pointer[7:4])};
 			end
 			
-			else if ((pointer[3:0] >= 4'd12) && (pointer[7:4] <= 4'd3)) begin // right up
+			else if ((pointer[3:0] > 4'd11) && (pointer[7:4] < 4'd4)) begin // right up
 		      curradd = {4'd0 , pointer[3:0] - pointer[7:4]};
 			  endadd = {pointer[7:4] + (4'd15 - pointer[3:0]), 4'd15};
 			end
@@ -362,12 +371,13 @@ module lean1_check(reset, active, pointer, chess, address, currstate, success, a
   end
 endmodule
 
-module lean2_check(reset, active, pointer, chess, address, currstate, success, active_next, clk);
-  input active, reset;
+module lean2_check(reset, active, pointer, chess, success, active_next, clk, board);
+  input active, reset;module lean2_check(reset, active, pointer, chess, success, active_next, clk, board);
+
   input [7:0] pointer;
-  input [1:0] chess, currstate;
+  input [1:0] chess;
   input clk;
-  output [7:0] address;
+  input [511:0] board;
   output active_next, success;
   
   reg [3:0] curr_state, nxt_state;
@@ -375,6 +385,9 @@ module lean2_check(reset, active, pointer, chess, address, currstate, success, a
   reg [2:0] count;
   reg [1:0] curstate, ches;
   reg actnex, suc;
+  wire [7:0]address;
+  wire currstate;
+  Memory_Read mr1(.in(board), .select(address), .out(currstate));
 
   assign active_next = actnex;
   assign success = suc;
@@ -435,7 +448,7 @@ module lean2_check(reset, active, pointer, chess, address, currstate, success, a
 			  endadd = {pointer[7:4] - 4'd4, pointer[3:0] + 4'd4};
 			end
 						
-			else if ((pointer[3:0] >= 4'd12) && (pointer[7:4] > 4'd3) && (pointer[7:4] < 4'd12)) begin // right
+			else if ((pointer[3:0] > 4'd11) && (pointer[7:4] > 4'd3) && (pointer[7:4] < 4'd12)) begin // right
 		      curradd = {pointer[7:4] + 4'd4 , pointer[3:0] - 4'd4};
 			  endadd = {pointer[7:4] - (4'd15 - pointer[3:0]), 4'd15};
 			end
@@ -450,23 +463,23 @@ module lean2_check(reset, active, pointer, chess, address, currstate, success, a
 			  endadd = {pointer[7:4] - 4'd4 , pointer[3:0] + 4'd4};
 			end
 						
-			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] <= 4'd3)) begin // left up
+			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] < 4'd4)) begin // left up
 			  curradd = {pointer[7:4] + pointer[3:0] , 4'd0};
 			  endadd = {4'd0, pointer[3:0] + pointer[7:4]};
 			end
 			
-			else if ((pointer[3:0] >= 4'd12) && (pointer[7:4] >= 4'd12)) begin // right down
+			else if ((pointer[3:0] > 4'd11) && (pointer[7:4] > 4'd11)) begin // right down
 			  curradd = {4'd15 , pointer[3:0] - pointer[7:4]};
 			  endadd = {pointer[7:4] - (4'd15 - pointer[3:0]), 4'd15};
 			end
 			
-			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] >= 4'd12)) begin // left down
+			else if ((pointer[3:0] < 4'd4) && (pointer[7:4] > 4'd11)) begin // left down
 			  endadd = {pointer[7:4] - 4'd4, pointer[3:0] + 4'd4};
 			  if ((4'd15 - pointer[7:4]) < pointer[3:0]) curradd = {4'd15, pointer[3:0] - (4'd15 - pointer[7:4])};
 			  else curradd = {pointer[7:4] + pointer[3:0], 4'd0};
 			end
 			
-			else if ((pointer[3:0] >= 4'd12) && (pointer[7:4] <= 4'd3)) begin // right up
+			else if ((pointer[3:0] > 4'd11) && (pointer[7:4] < 4'd4)) begin // right up
 			  curradd = {pointer[7:4] + 4'd4 , pointer[3:0] - 4'd4};
 			  if (pointer[7:4] < (4'd15 - pointer[3:0])) endadd = {4'd0, pointer[3:0] + pointer[7:4]};
 			  else endadd = {pointer[7:4] - (4'd15 - pointer[3:0]), 4'd15};
@@ -487,7 +500,8 @@ module lean2_check(reset, active, pointer, chess, address, currstate, success, a
 		  curradd[7:4] = curradd[7:4] - 4'd1;
           end
 		SUCCESS: suc = 1'd1;
-		FAIL: actnex = 1'b1;
+		FAIL: actnex = 1'b1;module lean2_check(reset, active, pointer, chess, success, active_next, clk, board);
+
 		default: begin
 			curradd = 8'd0;
 			endadd = 8'd0;

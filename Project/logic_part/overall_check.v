@@ -10,14 +10,7 @@ module overall_check(reset/*quanju reset*/, active/*xia qi*/, pointer, chess, su
     wire reset_next;
     //Results of each check module
     wire [3:0] success_result, active_next_result;
-    wire [1:0] re1, re2, re3, re4;
-    wire [7:0] ad1, ad2, ad3, ad4;
 
-    Memory_Read mr1(.in(board), .select(ad1), .out(re1));
-    Memory_Read mr2(.in(board), .select(ad2), .out(re2));
-    Memory_Read mr3(.in(board), .select(ad3), .out(re3));
-    Memory_Read mr4(.in(board), .select(ad4), .out(re4));
-    
     control counters_control(.clock(clk), .resetn(reset),
                              //feedback signal for moving to next state
                              .go(active), .active_next(active_next_result[3:0]), .success(success_result[3:0]), 
@@ -25,24 +18,24 @@ module overall_check(reset/*quanju reset*/, active/*xia qi*/, pointer, chess, su
                              .set(reset_next), .active(active_next[3:0]), .final_suc(success), .final_fai(fail));
 
     horizontal_check ck0(.reset(reset_next), .active(active_next[0]), //control signal
-                         .pointer(pointer), .chess(chess), .address(ad1), .currstate(re1),
+                         .pointer(pointer), .chess(chess),
                          .success(success_result[0]), .active_next(active_next_result[0]), //result signal
-                         .clk(clk));
+                         .clk(clk), .board(board));
 
     verticle_check ck1(.reset(reset_next), .active(active_next[1]), //control signal
-                         .pointer(pointer), .chess(chess), .address(ad2), .currstate(re2),
+                         .pointer(pointer), .chess(chess),
                          .success(success_result[1]), .active_next(active_next_result[1]), //result signal
-                         .clk(clk));
+                         .clk(clk), .board(board));
 
     lean1_check ck2(.reset(reset_next), .active(active_next[2]), //control signal
-                         .pointer(pointer), .chess(chess), .address(ad3), .currstate(re3),
+                         .pointer(pointer), .chess(chess),
                          .success(success_result[2]), .active_next(active_next_result[2]), //result signal
-                         .clk(clk));
+                         .clk(clk), .board(board));
 
     lean2_check ck3(.reset(reset_next), .active(active_next[3]), //control signal
-                         .pointer(pointer), .chess(chess), .address(ad4), .currstate(re4),
+                         .pointer(pointer), .chess(chess),
                          .success(success_result[3]), .active_next(active_next_result[3]), //result signal
-                         .clk(clk));
+                         .clk(clk), .board(board));
 
     
 endmodule
