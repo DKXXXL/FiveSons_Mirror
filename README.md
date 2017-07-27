@@ -3,6 +3,10 @@
 
 For CSCB58S17, Final Project.
 
+Video Representation:
+
+https://www.youtube.com/watch?v=KyxZJT9iJOU
+
 # GoBang #
 
 Project Description: 
