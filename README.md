@@ -27,4 +27,4 @@ VGA, Display Part:
 
   For the final release, please check brunch Release_Trivial.
 
-  We are not responsible for any documentation.
+  Documentation is not completed.
